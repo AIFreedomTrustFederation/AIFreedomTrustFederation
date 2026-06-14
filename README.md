@@ -11,7 +11,7 @@ Not extraction.
 Not dependency.  
 Not black-box domination.
 
-We are building tools that help transform broken code, broken workflows, broken infrastructure, broken businesses, and broken systems into working, transparent, human-aligned operating structures.
+We are building tools that help transform broken code, broken workflows, broken infrastructure, broken businesses, broken records, and broken systems into working, transparent, human-aligned operating structures.
 
 At the deepest level, this project is about transmutation:
 
@@ -31,7 +31,18 @@ Mortality into legacy.
 
 AI Freedom Trust Federation is becoming the public doctrine, identity, and coordination layer for a larger ecosystem of agentic systems.
 
-The first major infrastructure focus is the **AIFT VPS engine**: a decentralized app-building and workload-coordination system where agents help transform source code into runnable applications, assign workloads to provider nodes, monitor failures, classify dependency issues, learn reusable patterns, and report back to a human operator.
+The first major infrastructure focus is the **AIFT Cloud App Foundry / VPS engine**: a mobile-first, open-source, decentralized VPS cloud, app builder, domain control panel, provider-node network, and future `.aft` registry system.
+
+The system is being designed so users can:
+
+- reserve and manage AFT domains, local names, and future `.aft` names
+- build websites and apps with templates, WebAI, imported GitHub code, or local source folders
+- deploy sites and apps to the AIFT decentralized VPS cloud
+- turn phones, laptops, desktops, VPS servers, bare metal, and community hardware into provider nodes
+- manage DNS-like records, service records, redirects, SSL, hosting, deployments, backups, logs, analytics, and rollback
+- see exactly where every site or app runs through node disclosure and signed service records
+- keep websites online through health checks, blue/green deploys, fallback nodes, and portable app profiles
+- grow toward a decentralized naming and routing layer that can operate as an open alternative to centralized registry, registrar, DNS, and cloud dependency
 
 The long-term vision is a federation of agents and nodes that can support:
 
@@ -47,10 +58,11 @@ The long-term vision is a federation of agents and nodes that can support:
 - trust-first AI governance
 - sovereign wallet and regenerative value systems
 - community-owned technical infrastructure
+- decentralized naming and routing governance
 
 This is not just about building apps faster.
 
-It is about building systems that know where every action goes, who owns the next step, what failed, what was learned, and how the loop returns to the human operator.
+It is about building systems that know where every action goes, who owns the next step, what failed, what was learned, where a service actually runs, and how the loop returns to the human operator.
 
 ---
 
@@ -58,7 +70,7 @@ It is about building systems that know where every action goes, who owns the nex
 
 ### Human-governed
 
-Agents may assist, classify, build, summarize, warn, and recommend, but human operators remain responsible for high-risk decisions involving money, safety, law, identity, private data, deployment, irreversible actions, or custody.
+Agents may assist, classify, build, summarize, warn, and recommend, but human operators remain responsible for high-risk decisions involving money, safety, law, identity, private data, deployment, irreversible actions, custody, name ownership, registry governance, or public routing.
 
 ### Trust-first
 
@@ -69,11 +81,11 @@ No silent autonomy where approval is required.
 
 ### Decentralized where possible
 
-Infrastructure should not depend entirely on centralized platforms when open, local, self-hosted, or federated alternatives can serve the mission.
+Infrastructure should not depend entirely on centralized platforms when open, local, self-hosted, federated, or provider-node alternatives can serve the mission.
 
 ### Transparent by design
 
-Every agent should have a name, role, mission, input, output, permission boundary, memory boundary, risk level, and handoff path.
+Every agent, app, deployment, name record, provider node, gateway route, and service record should have a clear source, status, owner, permission boundary, risk level, and handoff path.
 
 ### Built for repair
 
@@ -113,7 +125,7 @@ Coordinates the full system, assigns tasks, tracks unresolved loops, and reports
 
 ### Source Intake Agent
 
-Receives repositories, app ideas, support requests, node registrations, or build requests and classifies them into the correct workflow.
+Receives repositories, app ideas, support requests, node registrations, name reservations, domain records, or build requests and classifies them into the correct workflow.
 
 ### Repo Reviewer Agent
 
@@ -121,7 +133,7 @@ Inspects a codebase, identifies its framework, build path, dependencies, runtime
 
 ### Compliance Gate Agent
 
-Checks licensing, privacy, secrets, dependency risk, and release boundaries before a project is built, published, or distributed.
+Checks licensing, privacy, secrets, dependency risk, security claims, registry rules, and release boundaries before a project is built, published, routed, or distributed.
 
 ### Build Runner Agent
 
@@ -131,9 +143,21 @@ Turns an approved source into a build run, tracks install/build/preview states, 
 
 Represents a VPS, server, phone, Termux device, local machine, or future decentralized node that can report health, capacity, runtime status, and workload updates.
 
+### Scheduler Agent
+
+Evaluates node health, capacity, trust level, region, runtime readiness, and workload requirements before assigning a signed job.
+
+### Gateway Agent
+
+Resolves names, domains, slugs, and signed service records, then routes users to healthy deployments with fallback behavior when needed.
+
+### Registry Governance Agent
+
+Supports reserved names, abuse review, transfer policy, disputes, signed ownership records, and future decentralized naming governance.
+
 ### Dependency Issue Agent
 
-Classifies blockers such as missing packages, missing runtimes, insufficient memory, missing secrets, build errors, storage limits, network failures, or approval requirements.
+Classifies blockers such as missing packages, missing runtimes, insufficient memory, missing secrets, build errors, storage limits, network failures, unsigned records, invalid routing records, or approval requirements.
 
 ### Learning Event Agent
 
@@ -141,15 +165,144 @@ Records reusable system patterns without exposing private user data, secrets, pr
 
 ### Operator Report Agent
 
-Summarizes system state for the human operator: active builds, failed builds, healthy nodes, stale nodes, warnings, unresolved issues, and recommended next actions.
+Summarizes system state for the human operator: active builds, failed builds, healthy nodes, stale nodes, routing warnings, registry warnings, capacity issues, unresolved blockers, and recommended next actions.
 
 ---
 
-## AIFT VPS Engine Doctrine
+## AIFT Cloud App Foundry / VPS Doctrine
 
-The AIFT VPS engine is the first major technical substrate for this mission.
+The AIFT VPS repo contributes the **Cloud App Foundry, decentralized provider-node, registry, gateway, and naming doctrine** to AI Freedom Trust Federation.
 
-Its purpose is to create reusable primitives for:
+AIFT is not only a VPS dashboard. It is the foundation for a community-governed naming, routing, and hosting network.
+
+The end goal is an AIFT provider console that feels as complete as a traditional domain registrar, DNS provider, website builder, hosting provider, deployment platform, and cloud control panel, but powered by a decentralized VPS network instead of one centralized hosting stack.
+
+### Decentralized naming vision
+
+AIFT should interoperate with normal DNS, normal domains, and normal browsers while building a parallel path for names and services that can be resolved through AIFT gateways, provider nodes, signed records, and community-governed registries.
+
+The long-term path is:
+
+```text
+Local-first names
+  -> signed service records
+  -> provider-node routing
+  -> public gateway resolution
+  -> community registry governance
+  -> portable domain and app ownership
+  -> decentralized naming layer
+```
+
+AIFT is therefore both:
+
+```text
+A decentralized cloud provider
+and
+A decentralized naming and routing authority
+```
+
+### Core provider model
+
+```text
+The registry decides what should exist.
+The builder creates the website or app.
+The scheduler chooses where it should run.
+The node network hosts it.
+The gateway routes users to the healthy deployment.
+The disclosure system tells the truth about where it runs.
+```
+
+No feature should bypass this model.
+
+### Name-to-app lifecycle
+
+Users should be able to open the dashboard and complete the full name-to-app lifecycle:
+
+```text
+Search or reserve a name
+  -> create or import an app
+  -> generate an app profile
+  -> prepare a workspace
+  -> install dependencies
+  -> build the app
+  -> start a local or provider-node runtime
+  -> connect a domain or AIFT name
+  -> route through the gateway
+  -> pass health checks
+  -> go live
+  -> monitor logs, analytics, sync, and uptime
+  -> roll back safely if needed
+```
+
+### Provider-node doctrine
+
+The first proven node model is:
+
+```text
+Verified servers = stable cloud backbone
+Phones and edge devices = decentralized edge compute swarm
+```
+
+Production hosting should prioritize verified servers and trusted always-on nodes. Phones and edge devices are valuable for previews, cache, tests, lightweight jobs, mirrors, and future swarm work.
+
+### Target architecture
+
+```text
+AIFT Dashboard
+  -> Sync Center
+  -> Controls Center
+  -> Domains UI
+  -> Sites UI
+  -> App Profiles UI
+  -> WebAI Builder
+  -> DNS Manager
+  -> Service Records Manager
+  -> Deployment Console
+  -> Node Console
+  -> Registry Admin Console
+
+AFT Site, App, and Name Registry
+  -> site ownership
+  -> app ownership
+  -> name reservations
+  -> DNS-like records
+  -> signed service records
+  -> active deployment records
+  -> fallback deployment records
+  -> disclosure records
+
+AIFT Scheduler
+  -> evaluates node health
+  -> selects eligible node
+  -> assigns signed jobs
+  -> tracks build and deploy status
+
+AIFT Node Agent
+  -> receives approved jobs
+  -> builds or serves workloads
+  -> reports heartbeat and capacity
+  -> syncs artifacts and mirrors
+
+AIFT Gateway
+  -> resolves domains, names, and slugs
+  -> routes to healthy deployments
+  -> performs blue/green handoff
+  -> serves fallback deployment when needed
+  -> exposes signed disclosure data
+
+AFT Registry Governance
+  -> reserved names
+  -> abuse review
+  -> ownership transfer
+  -> policy enforcement
+  -> dispute resolution
+  -> decentralized naming policy
+  -> future ICANN interoperability or independence
+```
+
+### Engine primitives
+
+The VPS engine creates reusable primitives for:
 
 ```text
 sources
@@ -162,6 +315,11 @@ issues
 reports
 learning events
 compliance checks
+names
+service records
+gateways
+disclosure records
+registry governance
 ```
 
 A typical workload lifecycle may look like:
@@ -195,6 +353,10 @@ battery-limited
 build-error
 secret-required
 approval-required
+unsigned-record
+invalid-routing-record
+health-check-failed
+fallback-required
 ```
 
 The system should always answer:
@@ -206,7 +368,46 @@ Who owns the next step?
 What risk level is involved?
 What was learned?
 Where does the loop return?
+Where does this service actually run?
+Is the current route signed, healthy, and disclosed?
 ```
+
+### VPS non-negotiables
+
+```text
+No fake green status.
+No mock production data in live operational paths.
+No hidden infrastructure claims.
+No switching traffic until health checks pass.
+No automatic destructive sync when a repo is ahead or diverged.
+No browser button should pretend the node updated until the local action actually completed.
+No reload prompt should appear until the dashboard reports ready after restart.
+```
+
+### Near-term operator flow
+
+```text
+/sync
+  -> Update dashboard files
+  -> Restart dashboard
+  -> Wait for Ready
+  -> Reload app
+
+/app-profiles
+  -> Save repo and create profile
+  -> Sync workspace
+  -> Install dependencies
+  -> Run build
+  -> Start local URL
+  -> Open app
+
+/logs
+  -> Read real output
+  -> Fix first reported issue
+  -> Retry the failed step
+```
+
+This is how AIFT becomes a real node-operated cloud instead of a demo UI.
 
 ---
 
@@ -221,7 +422,7 @@ Useful truth levels include:
 - **Official** — confirmed source of truth, such as a durable database record or owner override
 - **Working** — useful operational memory that may still need verification
 - **Inferred** — AI-generated synthesis that must be checked before action
-- **Pending review** — customer, driver, node, or system information awaiting confirmation
+- **Pending review** — customer, driver, node, route, registry, gateway, or system information awaiting confirmation
 
 This creates an epistemology for agents:
 
@@ -256,13 +457,15 @@ Examples of actions requiring explicit human approval:
 - sending money
 - signing transactions
 - deploying production systems
+- switching live traffic
 - publishing private code
+- registering, transferring, or revoking names
 - using secrets or credentials
 - deleting data
 - changing legal, financial, or safety-sensitive records
 - making claims about audited security
 
-No agent should require secrets to be stored in a public repo. Credentials, tokens, mailbox passwords, API keys, wallet keys, and private signing material must never be committed.
+No agent should require secrets to be stored in a public repo. Credentials, tokens, mailbox passwords, API keys, wallet keys, registry signing keys, and private signing material must never be committed.
 
 ---
 
@@ -312,8 +515,10 @@ AIFT projects should practice security by default:
 - prefer official, maintained packages
 - document incident response and recovery paths
 - separate symbolic language from engineering claims
+- refuse unsigned or invalid routing records where signed records are required
+- disclose infrastructure truthfully instead of hiding where services run
 
-Future cryptographic research may include post-quantum readiness, hybrid cryptography, decentralized identity, and long-term key resilience, but production claims must remain honest and auditable.
+Future cryptographic research may include post-quantum readiness, hybrid cryptography, decentralized identity, signed service records, gateway verification, and long-term key resilience, but production claims must remain honest and auditable.
 
 ---
 
@@ -321,7 +526,7 @@ Future cryptographic research may include post-quantum readiness, hybrid cryptog
 
 Public users should not be forced to understand internal machinery.
 
-AIFT may use agent, model, workflow, node, and build language in technical docs, but customer-facing and public-service experiences should use clear human language:
+AIFT may use agent, model, workflow, node, build, gateway, registry, and service-record language in technical docs, but customer-facing and public-service experiences should use clear human language:
 
 - guide
 - support
@@ -333,6 +538,10 @@ AIFT may use agent, model, workflow, node, and build language in technical docs,
 - trust record
 - service workflow
 - human approval
+- provider console
+- name record
+- health check
+- live route
 
 The public surface should feel clear, calm, trustworthy, and useful — not desperate, over-technical, or inflated.
 
@@ -346,12 +555,12 @@ When agents or contributors modify AIFT repositories, they should follow a safe 
 2. Make the smallest safe change.
 3. Avoid destructive Git commands unless explicitly authorized.
 4. Preserve backup-first behavior when rescuing work.
-5. Validate with typecheck, build, tests, or documented checks where available.
+5. Validate with typecheck, build, tests, health checks, logs, or documented checks where available.
 6. Explain exactly what changed.
 7. Call out what was not completed.
 8. Stop and ask before risky infrastructure changes.
 
-Destructive operations such as hard resets, forced pushes, branch deletion, and cleanup of unsynced work require explicit permission and backup-first discipline.
+Destructive operations such as hard resets, forced pushes, branch deletion, cleanup of unsynced work, destructive sync, live traffic switching, and registry mutation require explicit permission and backup-first discipline.
 
 ---
 
@@ -362,7 +571,7 @@ This repository is the public identity and doctrine layer for AI Freedom Trust F
 Related ecosystem repositories include:
 
 - **AIFreedomTrustFederation/AIFreedomTrustFederation** — public profile, doctrine, mission, and ecosystem map
-- **AIFreedomTrustFederation/VPS** — decentralized app-building and provider-node coordination engine
+- **AIFreedomTrustFederation/VPS** — AIFT Cloud App Foundry, decentralized VPS cloud, provider-node network, app builder, domain control panel, and future `.aft` registry
 - **AIFreedomTrustFederation/Aether_Coin_biozonecurrency** — sovereign wallet, biozonecurrency, AI-guardian, and regenerative token laboratory
 - **AIFreedomTrustFederation/capital-city-provisions** — real-world business workflow, customer trust, route, message, and operations doctrine
 - **AIFreedomTrustFederation/c-848263** — Mysterion Mind Map Cortex and sacred/fractal governance interface
@@ -375,16 +584,19 @@ Related ecosystem repositories include:
 The current focus areas are:
 
 1. Define the AIFT agent model.
-2. Build the AIFT VPS engine.
-3. Create reusable source, profile, build, workload, node, issue, report, and learning-event primitives.
+2. Build the AIFT Cloud App Foundry / VPS engine.
+3. Create reusable source, profile, build, workload, node, issue, report, learning-event, name, service-record, gateway, and disclosure primitives.
 4. Support file-backed storage first, then PostgreSQL-backed durable storage.
 5. Design provider-node update flows.
 6. Create operator dashboards.
 7. Build compliance gates for connected repositories.
 8. Support local-first and decentralized compute pathways.
 9. Develop human-approved app-building workflows.
-10. Align Aether Coin Biozonecurrency around sovereign consent, regenerative token taxonomy, and truthful security claims.
-11. Turn reusable operational patterns into privacy-respecting learning signals.
+10. Build the native AFT site, app, and name registry.
+11. Build signed service records and truthful node disclosure.
+12. Build gateway routing with health checks, blue/green deploys, fallback nodes, and safe rollback.
+13. Align Aether Coin Biozonecurrency around sovereign consent, regenerative token taxonomy, and truthful security claims.
+14. Turn reusable operational patterns into privacy-respecting learning signals.
 
 ---
 
@@ -406,6 +618,10 @@ We are interested in collaboration around:
 - privacy-respecting operational learning
 - post-quantum security research
 - regenerative value systems
+- decentralized naming systems
+- signed service records
+- gateway routing and disclosure
+- open registry governance
 - veteran and community-owned technical infrastructure
 
 ---
@@ -424,7 +640,7 @@ Website and public contact channels will be added as they become ready.
 
 AI Freedom Trust Federation is building toward a future where AI agents do not merely generate words.
 
-They help govern workflows, repair systems, coordinate infrastructure, preserve knowledge, protect trust, support sovereign stewardship, and return every loop to human conscience.
+They help govern workflows, repair systems, coordinate infrastructure, preserve knowledge, protect trust, support sovereign stewardship, disclose where services actually run, and return every loop to human conscience.
 
 This is automation with a soul-boundary.
 
