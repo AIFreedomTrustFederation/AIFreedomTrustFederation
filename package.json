@@ -30,7 +30,8 @@
     "desktop:build:win": "npm --workspace apps/desktop run build:win",
     "android:sync": "npm --workspace apps/android run sync",
     "android:open": "npm --workspace apps/android run open",
-    "android:build": "npm --workspace apps/android run build"
+    "android:build": "npm --workspace apps/android run build",
+    "android:apk:collect": "npm --workspace apps/android run apk:collect"
   },
   "devDependencies": {
     "@cyclonedx/cyclonedx-npm": "latest",
