@@ -4,6 +4,7 @@ import { createAiRequest, createIssue, createPullRequest, draftRelease, queueBui
 import { createArtifact, createPackage, createReleaseManifest } from '../../packages/forge-core/src/package-records.mjs';
 import { exportReleaseManifest, recordArtifactHash } from '../../packages/forge-core/src/artifact-hash.mjs';
 import { composeBuildFlow } from '../../packages/forge-core/src/build-flow.mjs';
+import { initBareRepo, inspectBareRepo } from '../../packages/forge-core/src/git-disk.mjs';
 import { createGitRepoRecord, createGitSnapshot, importGitRepoRecord } from '../../packages/forge-core/src/git-store.mjs';
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
@@ -34,6 +35,8 @@ const routes = {
   'POST /api/builds': async (req, res) => send(res, 201, queueBuild(await readJson(req))),
   'POST /api/build-flows': async (req, res) => send(res, 201, composeBuildFlow(await readJson(req))),
   'POST /api/git/repos': async (req, res) => send(res, 201, createGitRepoRecord(await readJson(req))),
+  'POST /api/git/init': async (req, res) => send(res, 201, initBareRepo(await readJson(req))),
+  'POST /api/git/inspect': async (req, res) => send(res, 201, inspectBareRepo(await readJson(req))),
   'POST /api/git/imports': async (req, res) => send(res, 201, importGitRepoRecord(await readJson(req))),
   'POST /api/git/snapshots': async (req, res) => send(res, 201, createGitSnapshot(await readJson(req))),
   'POST /api/releases': async (req, res) => send(res, 201, draftRelease(await readJson(req))),
