@@ -2,6 +2,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 import { checkForgeApi, fetchForgeState, postForgeAction, type ForgeApiStatus } from './forge/api';
+import { createArtifactRecord, createReleaseManifestRecord } from './forge/package-store';
 import {
   createAiRequest,
   createIssue,
@@ -17,11 +18,12 @@ import {
 import type { ForgeState } from './forge/types';
 
 const navItems = ['Explore', 'Repositories', 'Issues', 'Pull Requests', 'Builds', 'Packages', 'Releases', 'AI', 'Nodes'];
-const repoTabs = ['Code', 'AI', 'Issues', 'Pull Requests', 'Actions', 'Builds', 'Packages', 'Releases', 'Projects', 'Wiki', 'Security', 'Insights', 'Settings', 'Mirrors', 'Nodes', 'Approvals'];
+const repoTabs = ['Code', 'AI', 'Issues', 'Pull Requests', 'Actions', 'Builds', 'Packages', 'Artifacts', 'Releases', 'Projects', 'Wiki', 'Security', 'Insights', 'Settings', 'Mirrors', 'Nodes', 'Approvals'];
 const files = [
   ['apps/', 'Installable product apps', 'updated now'],
   ['docs/', 'Forge requirements, AI layer, and system doctrine', 'updated now'],
   ['apps/product-web/src/forge/', 'Backend-first client plus local fallback store', 'active'],
+  ['packages/forge-core/src/package-records.mjs', 'Backend package, artifact, and release manifest operations', 'active'],
   ['aift-ai-manifest.json', 'AI provider and agent manifest', 'foundation'],
   ['aift-forge-manifest.json', 'Product manifest', 'foundation'],
   ['aift-root-manifest.json', 'Root identity manifest', 'active'],
@@ -84,13 +86,17 @@ function App() {
     apply(localFallback());
   }
 
+  const artifacts = state.artifacts || [];
+  const releaseManifests = state.release_manifests || [];
   const stats = [
     ['Repos', state.repos.length],
     ['Issues', state.issues.length],
     ['Pull Requests', state.pull_requests.length],
     ['Builds', state.builds.length],
     ['Packages', state.packages.length],
+    ['Artifacts', artifacts.length],
     ['Releases', state.releases.length],
+    ['Manifests', releaseManifests.length],
     ['Approvals', state.approvals.length],
     ['AI Requests', state.ai_requests.length],
   ];
@@ -109,8 +115,8 @@ function App() {
           <div>
             <p className="eyebrow">AI Freedom Trust Federation / <strong>AIFT Forge</strong></p>
             <h1>AIFreedomTrustFederation</h1>
-            <p className="lede">Sovereign repo hosting, issues, pull requests, releases, packages, builds, AI agents, mirrors, and node federation.</p>
-            <div className="topic-row"><span>local-first</span><span>backend-first</span><span>AI-assisted</span><span>vps-relay</span><span>apk-ready</span><span>windows-app</span><span>federated-repos</span></div>
+            <p className="lede">Sovereign repo hosting, issues, pull requests, releases, packages, artifacts, builds, AI agents, mirrors, and node federation.</p>
+            <div className="topic-row"><span>local-first</span><span>backend-first</span><span>AI-assisted</span><span>package-ready</span><span>artifact-tracked</span><span>apk-ready</span><span>windows-app</span></div>
           </div>
           <div className="repo-actions">
             <button>Watch</button><button>Star</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'code-review-assistant'), { agent: 'code-review-assistant' })}>AI Review</button><button>Mirror</button><button>Fork</button><button className="primary">Clone</button>
@@ -138,7 +144,7 @@ function App() {
             </div>
 
             <div className="file-card">
-              <div className="commit-row"><strong>Owner Orchestrator</strong><span>connect AIFT Forge UI to backend-first local API</span><em>latest</em></div>
+              <div className="commit-row"><strong>Owner Orchestrator</strong><span>connect package artifacts and release manifests to backend API</span><em>latest</em></div>
               {files.map(([name, message, status]) => (
                 <div className="file-row" key={name}><strong>{name}</strong><span>{message}</span><em>{status}</em></div>
               ))}
@@ -159,7 +165,7 @@ function App() {
               <h2>README</h2>
               <p>AIFT Forge is the installable product layer for a self-hosted GitHub alternative. GitHub remains a public mirror; AIFT-operated relays and nodes become the runtime source of truth.</p>
               <div className="quick-grid">
-                <button onClick={() => backendFirst('issue', () => createIssue(state))}>New Issue</button><button onClick={() => backendFirst('pull_request', () => createPullRequest(state))}>New Pull Request</button><button onClick={() => backendFirst('release', () => draftRelease(state))}>Draft Release</button><button onClick={() => apply(publishPackageRecord(state))}>Publish Package</button><button onClick={() => backendFirst('build', () => queueBuild(state))}>Queue Build</button><button>Add Mirror</button><button>Open Node</button><button onClick={() => backendFirst('approval', () => requestApproval(state))}>Request Approval</button>
+                <button onClick={() => backendFirst('issue', () => createIssue(state))}>New Issue</button><button onClick={() => backendFirst('pull_request', () => createPullRequest(state))}>New Pull Request</button><button onClick={() => backendFirst('release', () => draftRelease(state))}>Draft Release</button><button onClick={() => backendFirst('package', () => publishPackageRecord(state))}>Publish Package</button><button onClick={() => backendFirst('artifact', () => createArtifactRecord(state))}>Record Artifact</button><button onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state))}>Release Manifest</button><button onClick={() => backendFirst('build', () => queueBuild(state))}>Queue Build</button><button onClick={() => backendFirst('approval', () => requestApproval(state))}>Request Approval</button>
               </div>
             </section>
 
@@ -172,7 +178,9 @@ function App() {
               <article id="pull-requests"><h3>Pull Requests</h3>{state.pull_requests.slice(0, 3).map((pr) => <p key={pr.pr_id}>#{pr.number} {pr.title} · {pr.review_status}</p>)}<button onClick={() => backendFirst('pull_request', () => createPullRequest(state))}>Create PR</button></article>
               <article id="builds"><h3>Builds</h3>{state.builds.slice(0, 3).map((build) => <p key={build.build_id}>{build.target} · {build.status}</p>)}<button onClick={() => backendFirst('build', () => queueBuild(state))}>Queue Build</button></article>
               <article id="releases"><h3>Releases</h3>{state.releases.slice(0, 3).map((release) => <p key={release.release_id}>{release.version} · {release.channel} · {release.status}</p>)}<button onClick={() => backendFirst('release', () => draftRelease(state))}>Draft Release</button></article>
-              <article id="packages"><h3>Packages</h3>{state.packages.slice(0, 3).map((pkg) => <p key={pkg.package_id}>{pkg.name} · {pkg.hash_status}</p>)}<button onClick={() => apply(publishPackageRecord(state))}>Add Package</button></article>
+              <article id="packages"><h3>Packages</h3>{state.packages.slice(0, 3).map((pkg) => <p key={pkg.package_id}>{pkg.name} · {pkg.hash_status}</p>)}<button onClick={() => backendFirst('package', () => publishPackageRecord(state))}>Add Package</button></article>
+              <article id="artifacts"><h3>Artifacts</h3>{artifacts.slice(0, 3).map((artifact) => <p key={artifact.artifact_id}>{artifact.name} · {artifact.signing_status}</p>)}<button onClick={() => backendFirst('artifact', () => createArtifactRecord(state))}>Record Artifact</button></article>
+              <article id="release-manifests"><h3>Release Manifests</h3>{releaseManifests.slice(0, 3).map((manifest) => <p key={manifest.manifest_id}>{manifest.version} · {manifest.approval_status}</p>)}<button onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state))}>Create Manifest</button></article>
               <article id="approvals"><h3>Approvals</h3>{state.approvals.slice(0, 3).map((approval) => <p key={approval.approval_id}>{approval.scope} · {approval.decision}</p>)}<button onClick={() => backendFirst('approval', () => requestApproval(state))}>Request Approval</button></article>
               <article id="nodes"><h3>Nodes</h3>{state.nodes.slice(0, 3).map((node) => <p key={node.node_id}>{node.name} · {node.health}</p>)}<button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'node-federation-assistant'), { agent: 'node-federation-assistant' })}>Inspect Nodes</button></article>
               <article id="ai-requests"><h3>AI Requests</h3>{state.ai_requests.slice(0, 3).map((request) => <p key={request.ai_request_id}>{request.agent} · {request.status}</p>)}<button onClick={() => backendFirst('ai_request', () => createAiRequest(state))}>Run Local AI Stub</button></article>
@@ -188,11 +196,11 @@ function App() {
             </article>
             {rightCards.map(([title, body]) => <article className="side-card" key={title}><h3>{title}</h3><p>{body}</p></article>)}
             <article className="side-card">
-              <h3>Local Store</h3>
-              <p>Backend-first records are active when the API is online. Browser-local records remain the offline fallback.</p>
-              <button className="wide" onClick={() => backendFirst('issue', () => createIssue(state))}>Create Local Issue</button>
-              <button className="wide secondary" onClick={() => backendFirst('pull_request', () => createPullRequest(state))}>Create Local PR</button>
-              <button className="wide secondary" onClick={() => backendFirst('build', () => queueBuild(state))}>Queue Local Build</button>
+              <h3>Package Pipeline</h3>
+              <p>Package, artifact, and release manifest records are now backend-backed when the API is online.</p>
+              <button className="wide" onClick={() => backendFirst('package', () => publishPackageRecord(state))}>Create Package Record</button>
+              <button className="wide secondary" onClick={() => backendFirst('artifact', () => createArtifactRecord(state))}>Record Artifact</button>
+              <button className="wide secondary" onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state))}>Create Release Manifest</button>
             </article>
             <article className="side-card">
               <h3>AI Actions</h3>
