@@ -1,4 +1,6 @@
+import fs from 'node:fs';
 import http from 'node:http';
+import path from 'node:path';
 import { readState, resetState } from '../../packages/forge-core/src/store.mjs';
 import { createAiRequest, createIssue, createPullRequest, draftRelease, queueBuild, requestApproval } from '../../packages/forge-core/src/records.mjs';
 import { createArtifact, createPackage, createReleaseManifest } from '../../packages/forge-core/src/package-records.mjs';
@@ -18,6 +20,8 @@ import { createAndroidBuildRequest } from '../../packages/forge-core/src/android
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
 const port = Number(process.env.AIFT_FORGE_API_PORT || 4177);
+const repoRoot = process.cwd();
+const androidDist = path.join(repoRoot, 'dist', 'android');
 
 async function readJson(req) {
   const chunks = [];
@@ -36,6 +40,35 @@ function send(res, status, payload) {
     'access-control-allow-headers': 'content-type'
   });
   res.end(body);
+}
+
+function sendFile(res, file, contentType) {
+  if (!fs.existsSync(file)) return send(res, 404, { ok: false, error: 'artifact-not-found', file: path.relative(repoRoot, file) });
+  const stat = fs.statSync(file);
+  res.writeHead(200, {
+    'content-type': contentType,
+    'content-length': stat.size,
+    'content-disposition': `attachment; filename="${path.basename(file)}"`,
+    'access-control-allow-origin': '*'
+  });
+  fs.createReadStream(file).pipe(res);
+}
+
+function androidArtifacts() {
+  const manifestPath = path.join(androidDist, 'aift-forge-android-artifacts.json');
+  const debugPath = path.join(androidDist, 'aift-forge-debug.apk');
+  const releasePath = path.join(androidDist, 'aift-forge-release.apk');
+  return {
+    ok: true,
+    manifest_path: fs.existsSync(manifestPath) ? 'dist/android/aift-forge-android-artifacts.json' : null,
+    debug_apk: fs.existsSync(debugPath) ? '/downloads/android/aift-forge-debug.apk' : null,
+    release_apk: fs.existsSync(releasePath) ? '/downloads/android/aift-forge-release.apk' : null,
+    repo_paths: {
+      debug_apk: 'dist/android/aift-forge-debug.apk',
+      release_apk: 'dist/android/aift-forge-release.apk',
+      manifest: 'dist/android/aift-forge-android-artifacts.json'
+    }
+  };
 }
 
 const routes = {
@@ -86,6 +119,9 @@ const server = http.createServer(async (req, res) => {
   if (await handleGitSmartHttp(req, res, url)) return;
   if (req.method === 'GET' && url.pathname === '/api/state') return send(res, 200, readState());
   if (req.method === 'GET' && url.pathname === '/api/health') return send(res, 200, { ok: true, service: 'aift-forge-api' });
+  if (req.method === 'GET' && url.pathname === '/api/android/artifacts') return send(res, 200, androidArtifacts());
+  if (req.method === 'GET' && url.pathname === '/downloads/android/aift-forge-debug.apk') return sendFile(res, path.join(androidDist, 'aift-forge-debug.apk'), 'application/vnd.android.package-archive');
+  if (req.method === 'GET' && url.pathname === '/downloads/android/aift-forge-release.apk') return sendFile(res, path.join(androidDist, 'aift-forge-release.apk'), 'application/vnd.android.package-archive');
   const handler = routes[`${req.method} ${url.pathname}`];
   if (!handler) return send(res, 404, { ok: false, error: 'not-found' });
   try {
