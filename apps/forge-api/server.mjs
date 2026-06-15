@@ -11,6 +11,7 @@ import { createGitRepoRecord, createGitSnapshot, importGitRepoRecord } from '../
 import { canAccessRepo, currentIdentity, grantRepoPermission } from '../../packages/forge-core/src/identity.mjs';
 import { cloneInfo, fetchCapability, pushCapability } from '../../packages/forge-core/src/git-transport.mjs';
 import { receivePackRequest, serviceDiscovery, uploadPackRequest } from '../../packages/forge-core/src/git-smart-http.mjs';
+import { handleGitSmartHttp } from '../../packages/forge-core/src/git-rpc-http.mjs';
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
 const port = Number(process.env.AIFT_FORGE_API_PORT || 4177);
@@ -73,6 +74,7 @@ const routes = {
 const server = http.createServer(async (req, res) => {
   if (req.method === 'OPTIONS') return send(res, 200, { ok: true });
   const url = new URL(req.url || '/', `http://${host}:${port}`);
+  if (await handleGitSmartHttp(req, res, url)) return;
   if (req.method === 'GET' && url.pathname === '/api/state') return send(res, 200, readState());
   if (req.method === 'GET' && url.pathname === '/api/health') return send(res, 200, { ok: true, service: 'aift-forge-api' });
   const handler = routes[`${req.method} ${url.pathname}`];
