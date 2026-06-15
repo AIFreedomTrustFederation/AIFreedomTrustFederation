@@ -46,6 +46,7 @@ const requiredFiles = [
   'packages/forge-core/src/store.mjs',
   'packages/forge-core/src/records.mjs',
   'packages/forge-core/src/package-records.mjs',
+  'packages/forge-core/src/artifact-hash.mjs',
 ];
 
 const requiredJson = [
@@ -120,6 +121,7 @@ for (const [file, labels] of [
   ['packages/forge-core/src/store.mjs', ['readState', 'writeState', 'resetState', 'addRecord']],
   ['packages/forge-core/src/records.mjs', ['createIssue', 'createPullRequest', 'queueBuild', 'createAiRequest']],
   ['packages/forge-core/src/package-records.mjs', ['createPackage', 'createArtifact', 'createReleaseManifest']],
+  ['packages/forge-core/src/artifact-hash.mjs', ['hashText', 'hashFile', 'recordArtifactHash', 'exportReleaseManifest']],
   ['apps/forge-api/server.mjs', ['/api/state', '/api/issues', '/api/pull-requests', '/api/builds', '/api/packages', '/api/artifacts', '/api/release-manifests', '/api/ai/requests']],
   ['docs/AIFT_FORGE_SOVEREIGN_POLICY.md', ['No arbitrary rules', 'visible', 'documented', 'versioned', 'locally inspectable']],
   ['docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md', ['Windows installer', 'Windows portable app', 'Android APK', 'artifact hash', 'signing status']],
