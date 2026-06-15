@@ -6,6 +6,7 @@ import { exportReleaseManifest, recordArtifactHash } from '../../packages/forge-
 import { composeBuildFlow } from '../../packages/forge-core/src/build-flow.mjs';
 import { initBareRepo, inspectBareRepo } from '../../packages/forge-core/src/git-disk.mjs';
 import { listGitBranches, listGitTags } from '../../packages/forge-core/src/git-refs.mjs';
+import { listGitCommits, listGitTree, readGitBlob, readGitDiff } from '../../packages/forge-core/src/git-objects.mjs';
 import { createGitRepoRecord, createGitSnapshot, importGitRepoRecord } from '../../packages/forge-core/src/git-store.mjs';
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
@@ -40,6 +41,10 @@ const routes = {
   'POST /api/git/inspect': async (req, res) => send(res, 201, inspectBareRepo(await readJson(req))),
   'POST /api/git/branches': async (req, res) => send(res, 200, listGitBranches(await readJson(req))),
   'POST /api/git/tags': async (req, res) => send(res, 200, listGitTags(await readJson(req))),
+  'POST /api/git/commits': async (req, res) => send(res, 200, listGitCommits(await readJson(req))),
+  'POST /api/git/tree': async (req, res) => send(res, 200, listGitTree(await readJson(req))),
+  'POST /api/git/blob': async (req, res) => send(res, 200, readGitBlob(await readJson(req))),
+  'POST /api/git/diff': async (req, res) => send(res, 200, readGitDiff(await readJson(req))),
   'POST /api/git/imports': async (req, res) => send(res, 201, importGitRepoRecord(await readJson(req))),
   'POST /api/git/snapshots': async (req, res) => send(res, 201, createGitSnapshot(await readJson(req))),
   'POST /api/releases': async (req, res) => send(res, 201, draftRelease(await readJson(req))),
