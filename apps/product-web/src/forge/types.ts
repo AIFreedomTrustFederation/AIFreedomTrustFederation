@@ -57,6 +57,31 @@ export type ForgePackage = {
   hash_status: 'pending' | 'recorded';
 };
 
+export type ForgeArtifact = {
+  artifact_id: string;
+  repo_id: string;
+  package_id: string;
+  artifact_type: string;
+  name: string;
+  location: string;
+  sha256: string;
+  signing_status: 'unsigned' | 'signed' | 'pending';
+  created_at: string;
+};
+
+export type ForgeReleaseManifest = {
+  manifest_id: string;
+  schema: string;
+  repo_id: string;
+  release_id: string;
+  version: string;
+  channel: string;
+  source_ref: string;
+  artifact_count: number;
+  approval_status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+};
+
 export type ForgeBuild = {
   build_id: string;
   repo_id: string;
@@ -100,6 +125,8 @@ export type ForgeState = {
   pull_requests: ForgePullRequest[];
   releases: ForgeRelease[];
   packages: ForgePackage[];
+  artifacts?: ForgeArtifact[];
+  release_manifests?: ForgeReleaseManifest[];
   builds: ForgeBuild[];
   approvals: ForgeApproval[];
   nodes: ForgeNode[];
