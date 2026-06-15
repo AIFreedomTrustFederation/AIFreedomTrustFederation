@@ -3,6 +3,7 @@ import { readState, resetState } from '../../packages/forge-core/src/store.mjs';
 import { createAiRequest, createIssue, createPullRequest, draftRelease, queueBuild, requestApproval } from '../../packages/forge-core/src/records.mjs';
 import { createArtifact, createPackage, createReleaseManifest } from '../../packages/forge-core/src/package-records.mjs';
 import { exportReleaseManifest, recordArtifactHash } from '../../packages/forge-core/src/artifact-hash.mjs';
+import { composeBuildFlow } from '../../packages/forge-core/src/build-flow.mjs';
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
 const port = Number(process.env.AIFT_FORGE_API_PORT || 4177);
@@ -30,6 +31,7 @@ const routes = {
   'POST /api/issues': async (req, res) => send(res, 201, createIssue(await readJson(req))),
   'POST /api/pull-requests': async (req, res) => send(res, 201, createPullRequest(await readJson(req))),
   'POST /api/builds': async (req, res) => send(res, 201, queueBuild(await readJson(req))),
+  'POST /api/build-flows': async (req, res) => send(res, 201, composeBuildFlow(await readJson(req))),
   'POST /api/releases': async (req, res) => send(res, 201, draftRelease(await readJson(req))),
   'POST /api/packages': async (req, res) => send(res, 201, createPackage(await readJson(req))),
   'POST /api/artifacts': async (req, res) => send(res, 201, createArtifact(await readJson(req))),
