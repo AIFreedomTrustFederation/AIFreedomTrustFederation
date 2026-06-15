@@ -27,6 +27,7 @@ const requiredFiles = [
   'apps/product-web/src/style.css',
   'apps/product-web/src/forge/types.ts',
   'apps/product-web/src/forge/store.ts',
+  'apps/product-web/src/forge/api.ts',
   'apps/product-web/tsconfig.json',
   'apps/product-web/vite.config.ts',
   'apps/desktop/package.json',
@@ -103,7 +104,7 @@ if (fs.existsSync(rootPackagePath)) {
 const webApp = path.join(root, 'apps/product-web/src/App.tsx');
 if (fs.existsSync(webApp)) {
   const appText = fs.readFileSync(webApp, 'utf8');
-  for (const label of ['AIFT Forge', 'Pull Requests', 'Packages', 'Releases', 'Mirrors', 'Approvals', 'AI Integration', 'ChatGPT-compatible', 'Security Review', 'Build Doctor', 'Local Store', 'Create Local Issue']) {
+  for (const label of ['AIFT Forge', 'Pull Requests', 'Packages', 'Releases', 'Mirrors', 'Approvals', 'AI Integration', 'ChatGPT-compatible', 'Security Review', 'Build Doctor', 'Local Store', 'Backend API']) {
     if (!appText.includes(label)) fail(`Product UI missing label: ${label}`);
     else pass(`Product UI includes ${label}`);
   }
@@ -112,6 +113,7 @@ if (fs.existsSync(webApp)) {
 for (const [file, labels] of [
   ['apps/product-web/src/forge/types.ts', ['ForgeState', 'ForgeIssue', 'ForgePullRequest', 'ForgeAiRequest']],
   ['apps/product-web/src/forge/store.ts', ['loadForgeState', 'saveForgeState', 'createIssue', 'createPullRequest', 'queueBuild', 'createAiRequest']],
+  ['apps/product-web/src/forge/api.ts', ['checkForgeApi', 'fetchForgeState', 'postForgeAction', 'FORGE_API_URL']],
   ['packages/forge-core/src/store.mjs', ['readState', 'writeState', 'resetState', 'addRecord']],
   ['packages/forge-core/src/records.mjs', ['createIssue', 'createPullRequest', 'queueBuild', 'createAiRequest']],
   ['apps/forge-api/server.mjs', ['/api/state', '/api/issues', '/api/pull-requests', '/api/builds', '/api/ai/requests']],
