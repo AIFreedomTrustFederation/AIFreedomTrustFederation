@@ -8,9 +8,11 @@ const requiredFiles = [
   'README.md',
   'aift-root-manifest.json',
   'aift-forge-manifest.json',
+  'aift-ai-manifest.json',
   'docs/AIFT_FORGE_REQUIREMENTS.md',
   'docs/AIFT_FORGE_DATA_MODEL.md',
   'docs/AIFT_FORGE_DESIGN_REQUIREMENTS.md',
+  'docs/AIFT_FORGE_AI_INTEGRATION.md',
   'docs/INSTALLABLE_APP_ARCHITECTURE.md',
   'apps/product-web/package.json',
   'apps/product-web/index.html',
@@ -30,6 +32,7 @@ const requiredJson = [
   'package.json',
   'aift-root-manifest.json',
   'aift-forge-manifest.json',
+  'aift-ai-manifest.json',
   'apps/product-web/package.json',
   'apps/product-web/tsconfig.json',
   'apps/desktop/package.json',
@@ -77,7 +80,7 @@ if (fs.existsSync(rootPackagePath)) {
 const webApp = path.join(root, 'apps/product-web/src/App.tsx');
 if (fs.existsSync(webApp)) {
   const appText = fs.readFileSync(webApp, 'utf8');
-  for (const label of ['AIFT Forge', 'Pull Requests', 'Packages', 'Releases', 'Mirrors', 'Approvals']) {
+  for (const label of ['AIFT Forge', 'Pull Requests', 'Packages', 'Releases', 'Mirrors', 'Approvals', 'AI Integration', 'ChatGPT-compatible', 'Security Review', 'Build Doctor']) {
     if (!appText.includes(label)) fail(`Product UI missing label: ${label}`);
     else pass(`Product UI includes ${label}`);
   }
