@@ -16,6 +16,7 @@ const requiredFiles = [
   'docs/AIFT_FORGE_SOVEREIGN_POLICY.md',
   'docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md',
   'docs/INSTALLABLE_APP_ARCHITECTURE.md',
+  'scripts/aift-forge-readiness.mjs',
   'apps/product-web/package.json',
   'apps/product-web/index.html',
   'apps/product-web/src/App.tsx',
@@ -76,6 +77,10 @@ if (fs.existsSync(rootPackagePath)) {
   for (const workspace of ['apps/product-web', 'apps/desktop', 'apps/android']) {
     if (!workspaces.has(workspace)) fail(`Root package.json missing workspace ${workspace}`);
     else pass(`Workspace registered: ${workspace}`);
+  }
+  for (const scriptName of ['verify', 'readiness', 'web:build', 'desktop:build:win', 'android:build']) {
+    if (!rootPackage.scripts?.[scriptName]) fail(`Root package.json missing script ${scriptName}`);
+    else pass(`Root script registered: ${scriptName}`);
   }
 }
 
