@@ -1,0 +1,20 @@
+{
+  "name": "aift-root-apps",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "apps/product-web",
+    "apps/desktop",
+    "apps/android"
+  ],
+  "scripts": {
+    "web:dev": "npm --workspace apps/product-web run dev",
+    "web:build": "npm --workspace apps/product-web run build",
+    "desktop:dev": "npm --workspace apps/desktop run dev",
+    "desktop:build:win": "npm --workspace apps/desktop run build:win",
+    "android:sync": "npm --workspace apps/android run sync",
+    "android:open": "npm --workspace apps/android run open",
+    "android:build": "npm --workspace apps/android run build"
+  }
+}
