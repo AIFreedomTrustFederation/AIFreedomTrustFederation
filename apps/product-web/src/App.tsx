@@ -18,13 +18,17 @@ const rightCards = [
   ['Security', 'hash pending · signing planned · approvals required'],
 ];
 
+function anchorFor(value: string) {
+  return value.toLowerCase().replace(/\s+/g, '-');
+}
+
 function App() {
   return (
     <div className="app-shell">
       <header className="topbar">
         <a className="brand" href="#"><span className="mark">A</span>AIFT Forge</a>
         <label className="search"><span>Search</span><input placeholder="Search or jump to..." /></label>
-        <nav className="global-nav">{navItems.map((item) => <a href={`#${item.toLowerCase().replaceAll(' ', '-')}`} key={item}>{item}</a>)}</nav>
+        <nav className="global-nav">{navItems.map((item) => <a href={`#${anchorFor(item)}`} key={item}>{item}</a>)}</nav>
         <div className="top-actions"><button>+</button><button>🔔</button><button>Node</button></div>
       </header>
 
@@ -41,7 +45,7 @@ function App() {
           </div>
         </section>
 
-        <nav className="repo-tabs">{repoTabs.map((tab, index) => <a className={index === 0 ? 'active' : ''} href={`#${tab.toLowerCase().replaceAll(' ', '-')}`} key={tab}>{tab}</a>)}</nav>
+        <nav className="repo-tabs">{repoTabs.map((tab, index) => <a className={index === 0 ? 'active' : ''} href={`#${anchorFor(tab)}`} key={tab}>{tab}</a>)}</nav>
 
         <section className="repo-layout">
           <div className="repo-main">
