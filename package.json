@@ -13,6 +13,16 @@
   "scripts": {
     "verify": "node scripts/verify-forge-structure.mjs",
     "readiness": "node scripts/aift-forge-readiness.mjs",
+    "deps:manifest": "node scripts/aift-dependency-manifest.mjs",
+    "qa:deps": "npm run deps:manifest && npm run verify && npm run readiness",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "sbom": "cyclonedx-npm --output-file dist/aift-forge-sbom.json",
+    "license:check": "license-checker-rseidelsohn --summary --production",
     "api:dev": "node apps/forge-api/server.mjs",
     "web:dev": "npm --workspace apps/product-web run dev",
     "web:build": "npm --workspace apps/product-web run build",
@@ -21,5 +31,15 @@
     "android:sync": "npm --workspace apps/android run sync",
     "android:open": "npm --workspace apps/android run open",
     "android:build": "npm --workspace apps/android run build"
+  },
+  "devDependencies": {
+    "@cyclonedx/cyclonedx-npm": "latest",
+    "@playwright/test": "latest",
+    "@types/node": "latest",
+    "eslint": "latest",
+    "license-checker-rseidelsohn": "latest",
+    "prettier": "latest",
+    "typescript": "latest",
+    "vitest": "latest"
   }
 }
