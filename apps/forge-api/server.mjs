@@ -8,6 +8,8 @@ import { initBareRepo, inspectBareRepo } from '../../packages/forge-core/src/git
 import { listGitBranches, listGitTags } from '../../packages/forge-core/src/git-refs.mjs';
 import { listGitCommits, listGitTree, readGitBlob, readGitDiff } from '../../packages/forge-core/src/git-objects.mjs';
 import { createGitRepoRecord, createGitSnapshot, importGitRepoRecord } from '../../packages/forge-core/src/git-store.mjs';
+import { canAccessRepo, currentIdentity, grantRepoPermission } from '../../packages/forge-core/src/identity.mjs';
+import { cloneInfo, fetchCapability, pushCapability } from '../../packages/forge-core/src/git-transport.mjs';
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
 const port = Number(process.env.AIFT_FORGE_API_PORT || 4177);
@@ -47,6 +49,12 @@ const routes = {
   'POST /api/git/diff': async (req, res) => send(res, 200, readGitDiff(await readJson(req))),
   'POST /api/git/imports': async (req, res) => send(res, 201, importGitRepoRecord(await readJson(req))),
   'POST /api/git/snapshots': async (req, res) => send(res, 201, createGitSnapshot(await readJson(req))),
+  'POST /api/git/clone-info': async (req, res) => send(res, 201, cloneInfo(await readJson(req))),
+  'POST /api/git/fetch-capability': async (req, res) => send(res, 201, fetchCapability(await readJson(req))),
+  'POST /api/git/push-capability': async (req, res) => send(res, 201, pushCapability(await readJson(req))),
+  'POST /api/identity/current': async (req, res) => send(res, 200, currentIdentity(await readJson(req))),
+  'POST /api/permissions/grant': async (req, res) => send(res, 201, grantRepoPermission(await readJson(req))),
+  'POST /api/permissions/check': async (req, res) => send(res, 200, canAccessRepo(await readJson(req))),
   'POST /api/releases': async (req, res) => send(res, 201, draftRelease(await readJson(req))),
   'POST /api/packages': async (req, res) => send(res, 201, createPackage(await readJson(req))),
   'POST /api/artifacts': async (req, res) => send(res, 201, createArtifact(await readJson(req))),
