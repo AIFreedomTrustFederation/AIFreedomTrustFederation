@@ -17,35 +17,16 @@ import {
 } from './forge/store';
 import type { ForgeState } from './forge/types';
 
-const navItems = ['Explore', 'Repositories', 'Issues', 'Pull Requests', 'Builds', 'Packages', 'Releases', 'AI', 'Nodes'];
-const repoTabs = ['Code', 'AI', 'Issues', 'Pull Requests', 'Actions', 'Builds', 'Packages', 'Artifacts', 'Releases', 'Projects', 'Wiki', 'Security', 'Insights', 'Settings', 'Mirrors', 'Nodes', 'Approvals'];
+const tabs = ['Code', 'AI', 'Issues', 'Pull Requests', 'Builds', 'Packages', 'Artifacts', 'Release Manifests', 'Approvals'];
 const files = [
-  ['apps/', 'Installable product apps', 'updated now'],
-  ['docs/', 'Forge requirements, AI layer, and system doctrine', 'updated now'],
-  ['apps/product-web/src/forge/', 'Backend-first client plus local fallback store', 'active'],
-  ['packages/forge-core/src/package-records.mjs', 'Backend package, artifact, and release manifest operations', 'active'],
-  ['aift-ai-manifest.json', 'AI provider and agent manifest', 'foundation'],
-  ['aift-forge-manifest.json', 'Product manifest', 'foundation'],
-  ['aift-root-manifest.json', 'Root identity manifest', 'active'],
-  ['README.md', 'Public doctrine root', 'active'],
+  ['apps/forge-api/server.mjs', 'Local Forge API with records, build flow, and Git routes', 'active'],
+  ['packages/forge-core/src/git-disk.mjs', 'Disk-backed bare Git initialization and inspection', 'active'],
+  ['packages/forge-core/src/git-refs.mjs', 'Branch and tag readers', 'active'],
+  ['packages/forge-core/src/git-objects.mjs', 'Commit, tree, blob, and diff readers', 'active'],
+  ['packages/forge-core/src/build-flow.mjs', 'Synchronized build/package/artifact/approval flow', 'active'],
+  ['packages/forge-core/src/artifact-hash.mjs', 'Artifact hashing and release export utilities', 'active'],
 ];
-const rightCards = [
-  ['About', 'Installable, self-hosted, federated GitHub alternative for AIFT repositories, releases, packages, issues, builds, and node mirrors.'],
-  ['AI providers', 'OpenAI-compatible · local model · private relay · offline rules · AIFT-native'],
-  ['Release channel', 'alpha · Windows · Android · Web · VPS relay'],
-  ['Node status', 'local-first · relay-assisted · mirror-ready'],
-  ['Security', 'no secrets in repo · approvals required · signing planned'],
-];
-const aiAgents = [
-  ['Repo Assistant', 'Summarize repo purpose, explain files, detect framework, and suggest next steps.', 'repo-assistant'],
-  ['Code Review', 'Summarize diffs, identify risk, suggest comments, and prepare approval drafts.', 'code-review-assistant'],
-  ['Issue Triage', 'Classify issues, suggest labels, find duplicates, and draft responses.', 'issue-triage-assistant'],
-  ['Build Doctor', 'Read build logs, identify first failure, classify cause, and recommend fixes.', 'build-failure-assistant'],
-  ['Release Notes', 'Summarize commits, collect artifacts, and draft changelogs.', 'release-assistant'],
-  ['Security Review', 'Scan for secrets, risky dependencies, unsafe permissions, and misleading claims.', 'security-assistant'],
-  ['Docs Assistant', 'Generate README sections, architecture notes, API docs, and troubleshooting guides.', 'docs-assistant'],
-  ['Node Federation AI', 'Summarize node health, mirrors, stale nodes, and safe fallback routes.', 'node-federation-assistant'],
-];
+const agents = ['repo-assistant', 'code-review-assistant', 'issue-triage-assistant', 'build-failure-assistant', 'release-assistant', 'security-assistant', 'docs-assistant', 'node-federation-assistant'];
 
 function anchorFor(value: string) {
   return value.toLowerCase().replace(/\s+/g, '-');
@@ -54,40 +35,49 @@ function anchorFor(value: string) {
 function App() {
   const [state, setState] = React.useState<ForgeState>(() => loadForgeState());
   const [apiStatus, setApiStatus] = React.useState<ForgeApiStatus>('checking');
+  const [notice, setNotice] = React.useState('Ready.');
 
-  function apply(next: ForgeState) {
+  function apply(next: ForgeState, message = 'State updated.') {
     saveForgeState(next);
     setState(next);
+    setNotice(message);
   }
 
   async function refreshFromApi() {
     const online = await checkForgeApi();
     setApiStatus(online ? 'online' : 'offline');
-    if (!online) return;
-    const next = await fetchForgeState();
-    apply(next);
+    if (!online) {
+      setNotice('Backend offline. Browser fallback is active.');
+      return;
+    }
+    apply(await fetchForgeState(), 'Backend state refreshed.');
   }
 
   React.useEffect(() => {
     refreshFromApi().catch(() => setApiStatus('offline'));
   }, []);
 
-  async function backendFirst(action: string, localFallback: () => ForgeState, body: Record<string, unknown> = {}) {
+  async function backendFirst(action: string, fallback: () => ForgeState, body: Record<string, unknown> = {}, message = 'Action complete.') {
     if (apiStatus !== 'offline') {
       try {
         const next = await postForgeAction(action, body);
         setApiStatus('online');
-        apply(next);
+        apply(next, message);
         return;
       } catch {
         setApiStatus('offline');
       }
     }
-    apply(localFallback());
+    apply(fallback(), `${message} Used browser fallback.`);
+  }
+
+  function planned(feature: string) {
+    apply(requestApproval(state, 'ai-action'), `${feature} is planned. An approval/implementation record was created.`);
   }
 
   const artifacts = state.artifacts || [];
-  const releaseManifests = state.release_manifests || [];
+  const manifests = state.release_manifests || [];
+  const snapshots = (state as ForgeState & { git_snapshots?: unknown[] }).git_snapshots || [];
   const stats = [
     ['Repos', state.repos.length],
     ['Issues', state.issues.length],
@@ -95,128 +85,49 @@ function App() {
     ['Builds', state.builds.length],
     ['Packages', state.packages.length],
     ['Artifacts', artifacts.length],
-    ['Releases', state.releases.length],
-    ['Manifests', releaseManifests.length],
+    ['Release Manifests', manifests.length],
     ['Approvals', state.approvals.length],
     ['AI Requests', state.ai_requests.length],
+    ['Git Snapshots', snapshots.length],
   ];
 
   return (
-    <div className="app-shell">
+    <div className="app-shell" id="top">
       <header className="topbar">
-        <a className="brand" href="#"><span className="mark">A</span>AIFT Forge</a>
-        <label className="search"><span>Search</span><input placeholder="Search repos, issues, code, builds, AI..." /></label>
-        <nav className="global-nav">{navItems.map((item) => <a href={`#${anchorFor(item)}`} key={item}>{item}</a>)}</nav>
-        <div className="top-actions"><button onClick={() => backendFirst('issue', () => createIssue(state))}>+</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state))}>AI</button><button>🔔</button><button onClick={refreshFromApi}>Node</button></div>
+        <a className="brand" href="#top"><span className="mark">A</span>AIFT Forge</a>
+        <label className="search"><span>Search</span><input placeholder="Search is planned; records are live." onChange={(event) => setNotice(`Search planned for: ${event.target.value}`)} /></label>
+        <nav className="global-nav">{tabs.map((tab) => <a href={`#${anchorFor(tab)}`} key={tab}>{tab}</a>)}</nav>
+        <div className="top-actions"><button onClick={() => backendFirst('issue', () => createIssue(state), {}, 'Issue created.')}>+</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state), {}, 'AI request created.')}>AI</button><button onClick={() => planned('Notifications')}>🔔</button><button onClick={refreshFromApi}>Node</button></div>
       </header>
 
       <main className="shell">
-        <section className="repo-hero">
-          <div>
-            <p className="eyebrow">AI Freedom Trust Federation / <strong>AIFT Forge</strong></p>
-            <h1>AIFreedomTrustFederation</h1>
-            <p className="lede">Sovereign repo hosting, issues, pull requests, releases, packages, artifacts, builds, AI agents, mirrors, and node federation.</p>
-            <div className="topic-row"><span>local-first</span><span>backend-first</span><span>AI-assisted</span><span>package-ready</span><span>artifact-tracked</span><span>apk-ready</span><span>windows-app</span></div>
-          </div>
-          <div className="repo-actions">
-            <button>Watch</button><button>Star</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'code-review-assistant'), { agent: 'code-review-assistant' })}>AI Review</button><button>Mirror</button><button>Fork</button><button className="primary">Clone</button>
-          </div>
+        <section className="repo-hero" id="code">
+          <div><p className="eyebrow">AI Freedom Trust Federation / <strong>AIFT Forge</strong></p><h1>AIFreedomTrustFederation</h1><p className="lede">Sovereign repo hosting, issues, pull requests, packages, artifacts, build flows, AI agents, and disk-backed Git foundations.</p><div className="topic-row"><span>local-first</span><span>backend-first</span><span>Git-backed</span><span>AI-assisted</span><span>artifact-tracked</span></div></div>
+          <div className="repo-actions"><button onClick={() => planned('Watch')}>Watch planned</button><button onClick={() => planned('Star')}>Star planned</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'code-review-assistant'), { agent: 'code-review-assistant' }, 'AI review created.')}>AI Review</button><button onClick={() => planned('Mirror')}>Mirror planned</button><button onClick={() => planned('Fork')}>Fork planned</button><button className="primary" onClick={() => backendFirst('git_init', () => requestApproval(state), { slug: 'aift-root', name: 'aift-root' }, 'Git repository initialized or recorded.')}>Init Git</button></div>
         </section>
 
-        <section className="stats-grid">
-          {stats.map(([label, value]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}
-        </section>
-
-        <nav className="repo-tabs">{repoTabs.map((tab, index) => <a className={index === 0 ? 'active' : ''} href={`#${anchorFor(tab)}`} key={tab}>{tab}</a>)}</nav>
+        <section className="stats-grid">{stats.map(([label, value]) => <article key={label}><strong>{value}</strong><span>{label}</span></article>)}</section>
+        <p className="notice">{notice} Backend API: <strong>{apiStatus}</strong></p>
+        <nav className="repo-tabs">{tabs.map((tab, index) => <a className={index === 0 ? 'active' : ''} href={`#${anchorFor(tab)}`} key={tab}>{tab}</a>)}</nav>
 
         <section className="repo-layout">
           <div className="repo-main">
-            <div className="toolbar-card">
-              <div className="branch-select">main ▾</div>
-              <button>Go to file</button>
-              <button>Add file ▾</button>
-              <button>Compare</button>
-              <button>History</button>
-              <button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'repo-assistant'), { agent: 'repo-assistant' })}>Ask AI</button>
-              <button onClick={() => backendFirst('reset', () => resetForgeState())}>Reset Data</button>
-              <button onClick={refreshFromApi}>Refresh API</button>
-              <button className="primary">Code ▾</button>
-            </div>
-
-            <div className="file-card">
-              <div className="commit-row"><strong>Owner Orchestrator</strong><span>connect package artifacts and release manifests to backend API</span><em>latest</em></div>
-              {files.map(([name, message, status]) => (
-                <div className="file-row" key={name}><strong>{name}</strong><span>{message}</span><em>{status}</em></div>
-              ))}
-            </div>
-
-            <section className="readme-card ai-panel" id="ai">
-              <div>
-                <p className="eyebrow">AI Integration</p>
-                <h2>ChatGPT-compatible and local AI assistants</h2>
-                <p>AIFT Forge supports a provider-neutral AI layer: OpenAI-compatible APIs, local models, private relay models, offline rules, and future AIFT-native agents. Secrets stay outside the repo and high-risk actions require human approval.</p>
-              </div>
-              <div className="quick-grid">
-                <button>Configure Provider</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'repo-assistant'), { agent: 'repo-assistant' })}>Ask Repo AI</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'code-review-assistant'), { agent: 'code-review-assistant' })}>Review PR</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'issue-triage-assistant'), { agent: 'issue-triage-assistant' })}>Triage Issue</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'build-failure-assistant'), { agent: 'build-failure-assistant' })}>Diagnose Build</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'release-assistant'), { agent: 'release-assistant' })}>Draft Release Notes</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'security-assistant'), { agent: 'security-assistant' })}>Security Review</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'node-federation-assistant'), { agent: 'node-federation-assistant' })}>Operator Report</button>
-              </div>
-            </section>
-
-            <section className="readme-card">
-              <h2>README</h2>
-              <p>AIFT Forge is the installable product layer for a self-hosted GitHub alternative. GitHub remains a public mirror; AIFT-operated relays and nodes become the runtime source of truth.</p>
-              <div className="quick-grid">
-                <button onClick={() => backendFirst('issue', () => createIssue(state))}>New Issue</button><button onClick={() => backendFirst('pull_request', () => createPullRequest(state))}>New Pull Request</button><button onClick={() => backendFirst('release', () => draftRelease(state))}>Draft Release</button><button onClick={() => backendFirst('package', () => publishPackageRecord(state))}>Publish Package</button><button onClick={() => backendFirst('artifact', () => createArtifactRecord(state))}>Record Artifact</button><button onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state))}>Release Manifest</button><button onClick={() => backendFirst('build', () => queueBuild(state))}>Queue Build</button><button onClick={() => backendFirst('approval', () => requestApproval(state))}>Request Approval</button>
-              </div>
-            </section>
-
-            <section className="module-grid ai-grid">
-              {aiAgents.map(([title, body, agent]) => <article key={title}><h3>{title}</h3><p>{body}</p><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, agent), { agent })}>{title}</button></article>)}
-            </section>
-
+            <div className="toolbar-card"><button onClick={() => backendFirst('git_branches', () => requestApproval(state), { slug: 'aift-root' }, 'Branches inspected.')}>Branches</button><button onClick={() => backendFirst('git_tags', () => requestApproval(state), { slug: 'aift-root' }, 'Tags inspected.')}>Tags</button><button onClick={() => backendFirst('git_commits', () => requestApproval(state), { slug: 'aift-root' }, 'Commits inspected.')}>History</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'repo-assistant'), { agent: 'repo-assistant' }, 'Repo AI request created.')}>Ask AI</button><button onClick={() => backendFirst('reset', () => resetForgeState(), {}, 'Data reset.')}>Reset Data</button><button onClick={refreshFromApi}>Refresh API</button><button className="primary" onClick={() => backendFirst('build_flow', () => queueBuild(state), { target: 'web-bundle', version: '0.1.0' }, 'Synchronized build flow created.')}>Run Build Flow</button></div>
+            <div className="file-card">{files.map(([name, message, status]) => <div className="file-row" key={name}><strong>{name}</strong><span>{message}</span><em>{status}</em></div>)}</div>
+            <section className="readme-card" id="ai"><p className="eyebrow">AI Integration</p><h2>ChatGPT-compatible and local AI assistants</h2><p>AIFT Forge supports provider-neutral AI: OpenAI-compatible APIs, local models, private relay models, offline rules, and future AIFT-native agents.</p><div className="quick-grid">{agents.map((agent) => <button key={agent} onClick={() => backendFirst('ai_request', () => createAiRequest(state, agent), { agent }, `${agent} created.`)}>{agent}</button>)}</div></section>
+            <section className="readme-card"><h2>Working Actions</h2><div className="quick-grid"><button onClick={() => backendFirst('issue', () => createIssue(state), {}, 'Issue created.')}>New Issue</button><button onClick={() => backendFirst('pull_request', () => createPullRequest(state), {}, 'Pull request created.')}>New Pull Request</button><button onClick={() => backendFirst('release', () => draftRelease(state), {}, 'Release drafted.')}>Draft Release</button><button onClick={() => backendFirst('package', () => publishPackageRecord(state), {}, 'Package created.')}>Publish Package</button><button onClick={() => backendFirst('artifact', () => createArtifactRecord(state), {}, 'Artifact recorded.')}>Record Artifact</button><button onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state), {}, 'Release manifest created.')}>Release Manifest</button><button onClick={() => backendFirst('approval', () => requestApproval(state), {}, 'Approval requested.')}>Request Approval</button></div></section>
             <section className="module-grid data-grid">
-              <article id="issues"><h3>Latest Issues</h3>{state.issues.slice(0, 3).map((issue) => <p key={issue.issue_id}>#{issue.number} {issue.title} · {issue.status}</p>)}<button onClick={() => backendFirst('issue', () => createIssue(state))}>Create Issue</button></article>
-              <article id="pull-requests"><h3>Pull Requests</h3>{state.pull_requests.slice(0, 3).map((pr) => <p key={pr.pr_id}>#{pr.number} {pr.title} · {pr.review_status}</p>)}<button onClick={() => backendFirst('pull_request', () => createPullRequest(state))}>Create PR</button></article>
-              <article id="builds"><h3>Builds</h3>{state.builds.slice(0, 3).map((build) => <p key={build.build_id}>{build.target} · {build.status}</p>)}<button onClick={() => backendFirst('build', () => queueBuild(state))}>Queue Build</button></article>
-              <article id="releases"><h3>Releases</h3>{state.releases.slice(0, 3).map((release) => <p key={release.release_id}>{release.version} · {release.channel} · {release.status}</p>)}<button onClick={() => backendFirst('release', () => draftRelease(state))}>Draft Release</button></article>
-              <article id="packages"><h3>Packages</h3>{state.packages.slice(0, 3).map((pkg) => <p key={pkg.package_id}>{pkg.name} · {pkg.hash_status}</p>)}<button onClick={() => backendFirst('package', () => publishPackageRecord(state))}>Add Package</button></article>
-              <article id="artifacts"><h3>Artifacts</h3>{artifacts.slice(0, 3).map((artifact) => <p key={artifact.artifact_id}>{artifact.name} · {artifact.signing_status}</p>)}<button onClick={() => backendFirst('artifact', () => createArtifactRecord(state))}>Record Artifact</button></article>
-              <article id="release-manifests"><h3>Release Manifests</h3>{releaseManifests.slice(0, 3).map((manifest) => <p key={manifest.manifest_id}>{manifest.version} · {manifest.approval_status}</p>)}<button onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state))}>Create Manifest</button></article>
-              <article id="approvals"><h3>Approvals</h3>{state.approvals.slice(0, 3).map((approval) => <p key={approval.approval_id}>{approval.scope} · {approval.decision}</p>)}<button onClick={() => backendFirst('approval', () => requestApproval(state))}>Request Approval</button></article>
-              <article id="nodes"><h3>Nodes</h3>{state.nodes.slice(0, 3).map((node) => <p key={node.node_id}>{node.name} · {node.health}</p>)}<button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'node-federation-assistant'), { agent: 'node-federation-assistant' })}>Inspect Nodes</button></article>
-              <article id="ai-requests"><h3>AI Requests</h3>{state.ai_requests.slice(0, 3).map((request) => <p key={request.ai_request_id}>{request.agent} · {request.status}</p>)}<button onClick={() => backendFirst('ai_request', () => createAiRequest(state))}>Run Local AI Stub</button></article>
+              <article id="issues"><h3>Issues</h3>{state.issues.slice(0, 3).map((issue) => <p key={issue.issue_id}>#{issue.number} {issue.title} · {issue.status}</p>)}</article>
+              <article id="pull-requests"><h3>Pull Requests</h3>{state.pull_requests.slice(0, 3).map((pr) => <p key={pr.pr_id}>#{pr.number} {pr.title} · {pr.review_status}</p>)}</article>
+              <article id="builds"><h3>Builds</h3>{state.builds.slice(0, 3).map((build) => <p key={build.build_id}>{build.target} · {build.status}</p>)}</article>
+              <article id="packages"><h3>Packages</h3>{state.packages.slice(0, 3).map((pkg) => <p key={pkg.package_id}>{pkg.name} · {pkg.hash_status}</p>)}</article>
+              <article id="artifacts"><h3>Artifacts</h3>{artifacts.slice(0, 3).map((artifact) => <p key={artifact.artifact_id}>{artifact.name} · {artifact.signing_status}</p>)}</article>
+              <article id="release-manifests"><h3>Release Manifests</h3>{manifests.slice(0, 3).map((manifest) => <p key={manifest.manifest_id}>{manifest.version} · {manifest.approval_status}</p>)}</article>
+              <article id="approvals"><h3>Approvals</h3>{state.approvals.slice(0, 3).map((approval) => <p key={approval.approval_id}>{approval.scope} · {approval.decision}</p>)}</article>
             </section>
           </div>
 
-          <aside className="repo-sidebar">
-            <article className="side-card status-card">
-              <h3>Backend API</h3>
-              <p>Status: <strong>{apiStatus}</strong></p>
-              <p>{apiStatus === 'online' ? 'Backend-backed records are active.' : 'Offline fallback uses browser-local records.'}</p>
-              <button className="wide" onClick={refreshFromApi}>Refresh API State</button>
-            </article>
-            {rightCards.map(([title, body]) => <article className="side-card" key={title}><h3>{title}</h3><p>{body}</p></article>)}
-            <article className="side-card">
-              <h3>Package Pipeline</h3>
-              <p>Package, artifact, and release manifest records are now backend-backed when the API is online.</p>
-              <button className="wide" onClick={() => backendFirst('package', () => publishPackageRecord(state))}>Create Package Record</button>
-              <button className="wide secondary" onClick={() => backendFirst('artifact', () => createArtifactRecord(state))}>Record Artifact</button>
-              <button className="wide secondary" onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state))}>Create Release Manifest</button>
-            </article>
-            <article className="side-card">
-              <h3>AI Actions</h3>
-              <button className="wide" onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'repo-assistant'), { agent: 'repo-assistant' })}>Summarize Repo</button>
-              <button className="wide secondary" onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'code-review-assistant'), { agent: 'code-review-assistant' })}>Review Changes</button>
-              <button className="wide secondary" onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'docs-assistant'), { agent: 'docs-assistant' })}>Draft Docs</button>
-              <button className="wide secondary" onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'security-assistant'), { agent: 'security-assistant' })}>Security Scan</button>
-            </article>
-            <article className="side-card">
-              <h3>Clone</h3>
-              <div className="clone-box">aift clone aift-root</div>
-              <button className="wide">Copy</button>
-              <button className="wide secondary">Download Archive</button>
-              <button className="wide secondary">Open in Desktop</button>
-            </article>
-          </aside>
+          <aside className="repo-sidebar"><article className="side-card status-card" id="backend-api"><h3>Backend API</h3><p>Status: <strong>{apiStatus}</strong></p><p>{apiStatus === 'online' ? 'Backend-backed records are active.' : 'Offline fallback uses browser-local records.'}</p><button className="wide" onClick={refreshFromApi}>Refresh API State</button></article><article className="side-card"><h3>Package Pipeline</h3><p>Build flows create build, package, artifact, hash, manifest, and approval records together.</p><button className="wide" onClick={() => backendFirst('build_flow', () => queueBuild(state), {}, 'Build flow created.')}>Run Synchronized Build</button><button className="wide secondary" onClick={() => backendFirst('git_inspect', () => requestApproval(state), { slug: 'aift-root' }, 'Git repo inspected.')}>Inspect Git Repo</button></article><article className="side-card"><h3>Clone</h3><div className="clone-box">aift clone aift-root</div><button className="wide" onClick={() => setNotice('Clone command: aift clone aift-root')}>Show Clone Command</button><button className="wide secondary" onClick={() => planned('Archive export')}>Download Archive planned</button><button className="wide secondary" onClick={() => planned('Desktop deep link')}>Open in Desktop planned</button></article></aside>
         </section>
       </main>
     </div>
