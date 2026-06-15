@@ -25,6 +25,8 @@ const requiredFiles = [
   'apps/product-web/index.html',
   'apps/product-web/src/App.tsx',
   'apps/product-web/src/style.css',
+  'apps/product-web/src/forge/types.ts',
+  'apps/product-web/src/forge/store.ts',
   'apps/product-web/tsconfig.json',
   'apps/product-web/vite.config.ts',
   'apps/desktop/package.json',
@@ -93,13 +95,15 @@ if (fs.existsSync(rootPackagePath)) {
 const webApp = path.join(root, 'apps/product-web/src/App.tsx');
 if (fs.existsSync(webApp)) {
   const appText = fs.readFileSync(webApp, 'utf8');
-  for (const label of ['AIFT Forge', 'Pull Requests', 'Packages', 'Releases', 'Mirrors', 'Approvals', 'AI Integration', 'ChatGPT-compatible', 'Security Review', 'Build Doctor']) {
+  for (const label of ['AIFT Forge', 'Pull Requests', 'Packages', 'Releases', 'Mirrors', 'Approvals', 'AI Integration', 'ChatGPT-compatible', 'Security Review', 'Build Doctor', 'Local Store', 'Create Local Issue']) {
     if (!appText.includes(label)) fail(`Product UI missing label: ${label}`);
     else pass(`Product UI includes ${label}`);
   }
 }
 
 for (const [file, labels] of [
+  ['apps/product-web/src/forge/types.ts', ['ForgeState', 'ForgeIssue', 'ForgePullRequest', 'ForgeAiRequest']],
+  ['apps/product-web/src/forge/store.ts', ['loadForgeState', 'saveForgeState', 'createIssue', 'createPullRequest', 'queueBuild', 'createAiRequest']],
   ['docs/AIFT_FORGE_SOVEREIGN_POLICY.md', ['No arbitrary rules', 'visible', 'documented', 'versioned', 'locally inspectable']],
   ['docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md', ['Windows installer', 'Windows portable app', 'Android APK', 'artifact hash', 'signing status']],
   ['docs/AIFT_FORGE_BUILD_READINESS.md', ['Build readiness checklist', 'product web bundle', 'Windows desktop installer', 'Android installable app package']],
