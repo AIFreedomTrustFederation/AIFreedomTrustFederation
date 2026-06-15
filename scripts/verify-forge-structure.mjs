@@ -37,6 +37,12 @@ const requiredFiles = [
   'apps/android/README.md',
   'apps/android/BUILD.md',
   'apps/android/www/index.html',
+  'apps/forge-api/package.json',
+  'apps/forge-api/server.mjs',
+  'packages/forge-core/package.json',
+  'packages/forge-core/src/seed.mjs',
+  'packages/forge-core/src/store.mjs',
+  'packages/forge-core/src/records.mjs',
 ];
 
 const requiredJson = [
@@ -48,6 +54,8 @@ const requiredJson = [
   'apps/product-web/tsconfig.json',
   'apps/desktop/package.json',
   'apps/android/package.json',
+  'apps/forge-api/package.json',
+  'packages/forge-core/package.json',
 ];
 
 let failed = false;
@@ -82,11 +90,11 @@ const rootPackagePath = path.join(root, 'package.json');
 if (fs.existsSync(rootPackagePath)) {
   const rootPackage = JSON.parse(fs.readFileSync(rootPackagePath, 'utf8'));
   const workspaces = new Set(rootPackage.workspaces || []);
-  for (const workspace of ['apps/product-web', 'apps/desktop', 'apps/android']) {
+  for (const workspace of ['apps/product-web', 'apps/desktop', 'apps/android', 'apps/forge-api', 'packages/forge-core']) {
     if (!workspaces.has(workspace)) fail(`Root package.json missing workspace ${workspace}`);
     else pass(`Workspace registered: ${workspace}`);
   }
-  for (const scriptName of ['verify', 'readiness', 'web:build', 'desktop:build:win', 'android:build']) {
+  for (const scriptName of ['verify', 'readiness', 'api:dev', 'web:build', 'desktop:build:win', 'android:build']) {
     if (!rootPackage.scripts?.[scriptName]) fail(`Root package.json missing script ${scriptName}`);
     else pass(`Root script registered: ${scriptName}`);
   }
@@ -104,6 +112,9 @@ if (fs.existsSync(webApp)) {
 for (const [file, labels] of [
   ['apps/product-web/src/forge/types.ts', ['ForgeState', 'ForgeIssue', 'ForgePullRequest', 'ForgeAiRequest']],
   ['apps/product-web/src/forge/store.ts', ['loadForgeState', 'saveForgeState', 'createIssue', 'createPullRequest', 'queueBuild', 'createAiRequest']],
+  ['packages/forge-core/src/store.mjs', ['readState', 'writeState', 'resetState', 'addRecord']],
+  ['packages/forge-core/src/records.mjs', ['createIssue', 'createPullRequest', 'queueBuild', 'createAiRequest']],
+  ['apps/forge-api/server.mjs', ['/api/state', '/api/issues', '/api/pull-requests', '/api/builds', '/api/ai/requests']],
   ['docs/AIFT_FORGE_SOVEREIGN_POLICY.md', ['No arbitrary rules', 'visible', 'documented', 'versioned', 'locally inspectable']],
   ['docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md', ['Windows installer', 'Windows portable app', 'Android APK', 'artifact hash', 'signing status']],
   ['docs/AIFT_FORGE_BUILD_READINESS.md', ['Build readiness checklist', 'product web bundle', 'Windows desktop installer', 'Android installable app package']],
