@@ -13,6 +13,8 @@ const requiredFiles = [
   'docs/AIFT_FORGE_DATA_MODEL.md',
   'docs/AIFT_FORGE_DESIGN_REQUIREMENTS.md',
   'docs/AIFT_FORGE_AI_INTEGRATION.md',
+  'docs/AIFT_FORGE_SOVEREIGN_POLICY.md',
+  'docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md',
   'docs/INSTALLABLE_APP_ARCHITECTURE.md',
   'apps/product-web/package.json',
   'apps/product-web/index.html',
@@ -83,6 +85,19 @@ if (fs.existsSync(webApp)) {
   for (const label of ['AIFT Forge', 'Pull Requests', 'Packages', 'Releases', 'Mirrors', 'Approvals', 'AI Integration', 'ChatGPT-compatible', 'Security Review', 'Build Doctor']) {
     if (!appText.includes(label)) fail(`Product UI missing label: ${label}`);
     else pass(`Product UI includes ${label}`);
+  }
+}
+
+for (const [file, labels] of [
+  ['docs/AIFT_FORGE_SOVEREIGN_POLICY.md', ['No arbitrary rules', 'visible', 'documented', 'versioned', 'locally inspectable']],
+  ['docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md', ['Windows installer', 'Windows portable app', 'Android APK', 'artifact hash', 'signing status']],
+]) {
+  const fullPath = path.join(root, file);
+  if (!fs.existsSync(fullPath)) continue;
+  const text = fs.readFileSync(fullPath, 'utf8');
+  for (const label of labels) {
+    if (!text.includes(label)) fail(`${file} missing required policy text: ${label}`);
+    else pass(`${file} includes ${label}`);
   }
 }
 
