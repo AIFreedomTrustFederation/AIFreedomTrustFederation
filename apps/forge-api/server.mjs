@@ -13,6 +13,7 @@ import { cloneInfo, fetchCapability, pushCapability } from '../../packages/forge
 import { receivePackRequest, serviceDiscovery, uploadPackRequest } from '../../packages/forge-core/src/git-smart-http.mjs';
 import { handleGitSmartHttp } from '../../packages/forge-core/src/git-rpc-http.mjs';
 import { authenticateToken, createLocalToken, revokeToken, seedAutomationToken } from '../../packages/forge-core/src/token-auth.mjs';
+import { localSetup } from '../../packages/forge-core/src/local-setup.mjs';
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
 const port = Number(process.env.AIFT_FORGE_API_PORT || 4177);
@@ -37,6 +38,7 @@ function send(res, status, payload) {
 }
 
 const routes = {
+  'POST /api/setup/local': async (req, res) => send(res, 201, localSetup(await readJson(req))),
   'POST /api/issues': async (req, res) => send(res, 201, createIssue(await readJson(req))),
   'POST /api/pull-requests': async (req, res) => send(res, 201, createPullRequest(await readJson(req))),
   'POST /api/builds': async (req, res) => send(res, 201, queueBuild(await readJson(req))),
