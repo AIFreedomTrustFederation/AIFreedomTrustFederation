@@ -31,6 +31,7 @@ Recommended app name:
 - offline bundled UI fallback
 - local API health check
 - optional relay URL field
+- repo-local APK artifact collector
 
 ## Android build path
 
@@ -44,6 +45,39 @@ npm --workspace apps/android run open
 ```
 
 After the native Android project exists, Android Studio can build a debug APK.
+
+## Repo-local APK artifact output
+
+After Android Studio or Gradle builds an APK, collect it back into the repo with:
+
+```bash
+npm run android:apk:collect
+```
+
+The collector searches for:
+
+- `apps/android/android/app/build/outputs/apk/debug/app-debug.apk`
+- `apps/android/android/app/build/outputs/apk/release/app-release.apk`
+
+It copies discovered APKs into:
+
+- `dist/android/aift-forge-debug.apk`
+- `dist/android/aift-forge-release.apk`
+
+It also writes:
+
+- `dist/android/aift-forge-android-artifacts.json`
+
+The artifact manifest includes:
+
+- app name
+- app id
+- artifact type
+- source path
+- repo-local target path
+- SHA-256 hash
+- file size
+- generated timestamp
 
 ## Fallback order
 
