@@ -3,5 +3,22 @@
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "main": "server.mjs"
+  "main": "server.mjs",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs"
+  },
+  "dependencies": {
+    "@fastify/cors": "latest",
+    "@opentelemetry/api": "latest",
+    "@opentelemetry/sdk-node": "latest",
+    "drizzle-orm": "latest",
+    "fastify": "latest",
+    "hono": "latest",
+    "prom-client": "latest",
+    "zod": "latest"
+  },
+  "optionalDependencies": {
+    "better-sqlite3": "latest"
+  }
 }
