@@ -50,6 +50,10 @@ const requiredFiles = [
   'packages/forge-core/src/build-flow.mjs',
   'packages/forge-core/src/git-store.mjs',
   'packages/forge-core/src/git-disk.mjs',
+  'packages/forge-core/src/git-refs.mjs',
+  'packages/forge-core/src/git-objects.mjs',
+  'packages/forge-core/src/identity.mjs',
+  'packages/forge-core/src/git-transport.mjs',
 ];
 
 const requiredJson = [
@@ -128,7 +132,11 @@ for (const [file, labels] of [
   ['packages/forge-core/src/build-flow.mjs', ['composeBuildFlow', 'hashText', 'artifact', 'approval']],
   ['packages/forge-core/src/git-store.mjs', ['createGitRepoRecord', 'importGitRepoRecord', 'createGitSnapshot', 'local-git']],
   ['packages/forge-core/src/git-disk.mjs', ['initBareRepo', 'inspectBareRepo', 'safeRepoDir', 'runGit']],
-  ['apps/forge-api/server.mjs', ['/api/state', '/api/issues', '/api/pull-requests', '/api/builds', '/api/build-flows', '/api/git/repos', '/api/git/init', '/api/git/inspect', '/api/packages', '/api/artifacts', '/api/release-manifests', '/api/ai/requests']],
+  ['packages/forge-core/src/git-refs.mjs', ['listGitBranches', 'listGitTags']],
+  ['packages/forge-core/src/git-objects.mjs', ['listGitCommits', 'listGitTree', 'readGitBlob', 'readGitDiff']],
+  ['packages/forge-core/src/identity.mjs', ['currentIdentity', 'grantRepoPermission', 'canAccessRepo', 'recordBlockedAction']],
+  ['packages/forge-core/src/git-transport.mjs', ['cloneInfo', 'fetchCapability', 'pushCapability']],
+  ['apps/forge-api/server.mjs', ['/api/state', '/api/issues', '/api/pull-requests', '/api/builds', '/api/build-flows', '/api/git/repos', '/api/git/init', '/api/git/inspect', '/api/git/clone-info', '/api/git/fetch-capability', '/api/git/push-capability', '/api/permissions/check', '/api/packages', '/api/artifacts', '/api/release-manifests', '/api/ai/requests']],
   ['docs/AIFT_FORGE_SOVEREIGN_POLICY.md', ['No arbitrary rules', 'visible', 'documented', 'versioned', 'locally inspectable']],
   ['docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md', ['Windows installer', 'Windows portable app', 'Android APK', 'artifact hash', 'signing status']],
   ['docs/AIFT_FORGE_BUILD_READINESS.md', ['Build readiness checklist', 'product web bundle', 'Windows desktop installer', 'Android installable app package']],
