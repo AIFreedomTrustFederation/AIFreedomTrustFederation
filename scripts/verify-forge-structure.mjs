@@ -5,6 +5,8 @@ import path from 'node:path';
 const root = process.cwd();
 const requiredFiles = [
   'package.json',
+  '.gitignore',
+  '.env.example',
   'README.md',
   'aift-root-manifest.json',
   'aift-forge-manifest.json',
@@ -15,6 +17,8 @@ const requiredFiles = [
   'docs/AIFT_FORGE_AI_INTEGRATION.md',
   'docs/AIFT_FORGE_SOVEREIGN_POLICY.md',
   'docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md',
+  'docs/AIFT_FORGE_BUILD_READINESS.md',
+  'docs/AIFT_FORGE_RELEASE_CHECKLIST.md',
   'docs/INSTALLABLE_APP_ARCHITECTURE.md',
   'scripts/aift-forge-readiness.mjs',
   'apps/product-web/package.json',
@@ -26,8 +30,10 @@ const requiredFiles = [
   'apps/desktop/package.json',
   'apps/desktop/main.cjs',
   'apps/desktop/fallback.html',
+  'apps/desktop/BUILD.md',
   'apps/android/package.json',
   'apps/android/README.md',
+  'apps/android/BUILD.md',
   'apps/android/www/index.html',
 ];
 
@@ -96,6 +102,8 @@ if (fs.existsSync(webApp)) {
 for (const [file, labels] of [
   ['docs/AIFT_FORGE_SOVEREIGN_POLICY.md', ['No arbitrary rules', 'visible', 'documented', 'versioned', 'locally inspectable']],
   ['docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md', ['Windows installer', 'Windows portable app', 'Android APK', 'artifact hash', 'signing status']],
+  ['docs/AIFT_FORGE_BUILD_READINESS.md', ['Build readiness checklist', 'product web bundle', 'Windows desktop installer', 'Android installable app package']],
+  ['docs/AIFT_FORGE_RELEASE_CHECKLIST.md', ['Structure', 'Build verification', 'Package verification', 'Human approval']],
 ]) {
   const fullPath = path.join(root, file);
   if (!fs.existsSync(fullPath)) continue;
