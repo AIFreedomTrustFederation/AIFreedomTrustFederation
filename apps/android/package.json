@@ -1,0 +1,11 @@
+{
+  "name": "aift-android-shell",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "sync": "echo Android shell workspace is ready",
+    "open": "echo Android shell workspace is ready",
+    "build": "echo Android shell workspace is ready"
+  }
+}
