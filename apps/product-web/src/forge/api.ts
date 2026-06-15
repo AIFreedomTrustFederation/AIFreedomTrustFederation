@@ -32,6 +32,7 @@ export async function postForgeAction(action: string, body: Record<string, unkno
     pull_request: '/api/pull-requests',
     build: '/api/builds',
     build_flow: '/api/build-flows',
+    android_build: '/api/android/builds',
     git_init: '/api/git/init',
     git_inspect: '/api/git/inspect',
     git_branches: '/api/git/branches',
