@@ -21,6 +21,10 @@ export function createAndroidBuildRequest(input = {}) {
       'dist/android/aift-forge-debug.apk',
       'dist/android/aift-forge-android-artifacts.json'
     ],
+    download_paths: [
+      '/downloads/android/aift-forge-debug.apk',
+      '/api/android/artifacts'
+    ],
     fallback_order: [
       'bundled Android UI',
       'local Forge API',
