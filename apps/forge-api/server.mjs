@@ -12,6 +12,7 @@ import { canAccessRepo, currentIdentity, grantRepoPermission } from '../../packa
 import { cloneInfo, fetchCapability, pushCapability } from '../../packages/forge-core/src/git-transport.mjs';
 import { receivePackRequest, serviceDiscovery, uploadPackRequest } from '../../packages/forge-core/src/git-smart-http.mjs';
 import { handleGitSmartHttp } from '../../packages/forge-core/src/git-rpc-http.mjs';
+import { authenticateToken, createLocalToken, revokeToken, seedAutomationToken } from '../../packages/forge-core/src/token-auth.mjs';
 
 const host = process.env.AIFT_FORGE_API_HOST || '127.0.0.1';
 const port = Number(process.env.AIFT_FORGE_API_PORT || 4177);
@@ -60,6 +61,10 @@ const routes = {
   'POST /api/identity/current': async (req, res) => send(res, 200, currentIdentity(await readJson(req))),
   'POST /api/permissions/grant': async (req, res) => send(res, 201, grantRepoPermission(await readJson(req))),
   'POST /api/permissions/check': async (req, res) => send(res, 200, canAccessRepo(await readJson(req))),
+  'POST /api/tokens/create': async (req, res) => send(res, 201, createLocalToken(await readJson(req))),
+  'POST /api/tokens/authenticate': async (req, res) => send(res, 200, authenticateToken(await readJson(req))),
+  'POST /api/tokens/revoke': async (req, res) => send(res, 200, revokeToken(await readJson(req))),
+  'POST /api/tokens/seed': async (_req, res) => send(res, 201, seedAutomationToken()),
   'POST /api/releases': async (req, res) => send(res, 201, draftRelease(await readJson(req))),
   'POST /api/packages': async (req, res) => send(res, 201, createPackage(await readJson(req))),
   'POST /api/artifacts': async (req, res) => send(res, 201, createArtifact(await readJson(req))),
