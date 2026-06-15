@@ -4,8 +4,26 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "sync": "echo Android shell workspace is ready",
-    "open": "echo Android shell workspace is ready",
-    "build": "echo Android shell workspace is ready"
+    "dev": "vite --host 127.0.0.1 --port 5183",
+    "build:web": "vite build --outDir www",
+    "sync": "capacitor sync android",
+    "open": "capacitor open android",
+    "build": "npm run build:web && capacitor sync android",
+    "android:add": "capacitor add android",
+    "doctor": "capacitor doctor android"
+  },
+  "dependencies": {
+    "@capacitor/android": "latest",
+    "@capacitor/app": "latest",
+    "@capacitor/core": "latest",
+    "@capacitor/device": "latest",
+    "@capacitor/filesystem": "latest",
+    "@capacitor/network": "latest",
+    "@capacitor/preferences": "latest",
+    "vite": "latest",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "latest"
   }
 }
