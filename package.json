@@ -9,6 +9,7 @@
     "apps/android"
   ],
   "scripts": {
+    "verify": "node scripts/verify-forge-structure.mjs",
     "web:dev": "npm --workspace apps/product-web run dev",
     "web:build": "npm --workspace apps/product-web run build",
     "desktop:dev": "npm --workspace apps/desktop run dev",
