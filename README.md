@@ -2,6 +2,66 @@
 
 **Human-governed agentic infrastructure for sovereign automation, decentralized compute, ethical AI, regenerative value systems, and generational repair.**
 
+## Federation Status
+
+| Field | Value |
+| --- | --- |
+| Status | Active |
+| Federation layer | Federation Core |
+| Repository role | Doctrine, templates, coordination patterns, and shared operating language |
+| Visibility | Public |
+| Primary language | JavaScript / TypeScript |
+
+## Purpose
+
+`AIFT-Forge` is the federation core. It holds the shared language, doctrine, templates, agent patterns, and multi-surface app foundations that other AI Freedom Trust Federation repositories align to.
+
+Use this repository when a change affects the overall operating model, agentic infrastructure language, reusable templates, profile structure, desktop/mobile app foundations, or cross-repository doctrine.
+
+## Current Capabilities
+
+- Federation doctrine and ecosystem map.
+- Workspace structure for product web, desktop, Android, API, and core packages.
+- Verification and readiness scripts for forge structure.
+- Dependency manifest, SBOM, license, lint, test, and formatting scripts.
+- Shared coordination language for agentic infrastructure.
+
+## Setup
+
+```bash
+npm install
+```
+
+## Verification
+
+Recommended checks:
+
+```bash
+npm run qa:deps
+npm run test
+npm run lint
+npm run format:check
+```
+
+Focused checks:
+
+```bash
+npm run verify
+npm run readiness
+npm run deps:manifest
+```
+
+## Roadmap
+
+1. Keep doctrine aligned with `www.aifreedomtrust.com`.
+2. Promote reusable templates into clear package boundaries.
+3. Keep agent roles and approval boundaries explicit.
+4. Maintain readiness checks as the source of truth for federation-core health.
+
+## Public Claims Note
+
+This repository may describe long-term infrastructure and governance direction, but implementation status must stay clear. Distinguish working systems, prototypes, research, plans, and symbolic language.
+
 AI Freedom Trust Federation is an open-source initiative building toward a trust-based future where artificial intelligence is not merely a chatbot, product, or corporate service, but a network of accountable agents, human-governed workflows, decentralized infrastructure, and reusable systems that help people turn disorder into repair.
 
 Our mission is to build AI systems that serve life.
