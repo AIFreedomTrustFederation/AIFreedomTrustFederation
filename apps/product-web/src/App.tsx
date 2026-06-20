@@ -17,7 +17,7 @@ import {
 } from './forge/store';
 import type { ForgeState } from './forge/types';
 
-const tabs = ['Code', 'AI', 'Issues', 'Pull Requests', 'Builds', 'Packages', 'Artifacts', 'Release Manifests', 'Approvals'];
+const tabs = ['Code', 'AI', 'Issues', 'Pull Requests', 'Builds', 'Packages', 'Artifacts', 'Release Manifests', 'Approvals', 'Security Review', 'Build Doctor'];
 const files = [
   ['apps/forge-api/server.mjs', 'Local Forge API with records, build flow, Android build requests, APK download routes, and Git routes', 'active'],
   ['apps/android/capacitor.config.ts', 'Android app configuration with local-network fallbacks', 'active'],
@@ -101,7 +101,7 @@ function App() {
         <a className="brand" href="#top"><span className="mark">A</span>AIFT Forge</a>
         <label className="search"><span>Search</span><input placeholder="Search is planned; records are live." onChange={(event) => setNotice(`Search planned for: ${event.target.value}`)} /></label>
         <nav className="global-nav">{tabs.map((tab) => <a href={`#${anchorFor(tab)}`} key={tab}>{tab}</a>)}</nav>
-        <div className="top-actions"><button onClick={() => backendFirst('issue', () => createIssue(state), {}, 'Issue created.')}>+</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state), {}, 'AI request created.')}>AI</button><button onClick={() => planned('Notifications')}>🔔</button><button onClick={refreshFromApi}>Node</button></div>
+        <div className="top-actions"><button onClick={() => backendFirst('issue', () => createIssue(state), {}, 'Issue created.')}>+</button><button onClick={() => backendFirst('ai_request', () => createAiRequest(state), {}, 'AI request created.')}>AI</button><button onClick={() => planned('Notifications')}>Notify</button><button onClick={refreshFromApi}>Node</button></div>
       </header>
 
       <main className="shell">
@@ -121,14 +121,16 @@ function App() {
             <div className="file-card">{files.map(([name, message, status]) => <div className="file-row" key={name}><strong>{name}</strong><span>{message}</span><em>{status}</em></div>)}</div>
             <section className="readme-card" id="ai"><p className="eyebrow">AI Integration</p><h2>ChatGPT-compatible and local AI assistants</h2><p>AIFT Forge supports provider-neutral AI: OpenAI-compatible APIs, local models, private relay models, offline rules, and future AIFT-native agents.</p><div className="quick-grid">{agents.map((agent) => <button key={agent} onClick={() => backendFirst('ai_request', () => createAiRequest(state, agent), { agent }, `${agent} created.`)}>{agent}</button>)}</div></section>
             <section className="readme-card"><h2>Working Actions</h2><div className="quick-grid"><button onClick={() => backendFirst('issue', () => createIssue(state), {}, 'Issue created.')}>New Issue</button><button onClick={() => backendFirst('pull_request', () => createPullRequest(state), {}, 'Pull request created.')}>New Pull Request</button><button onClick={() => backendFirst('release', () => draftRelease(state), {}, 'Release drafted.')}>Draft Release</button><button onClick={() => backendFirst('package', () => publishPackageRecord(state), {}, 'Package created.')}>Publish Package</button><button onClick={() => backendFirst('artifact', () => createArtifactRecord(state), {}, 'Artifact recorded.')}>Record Artifact</button><button onClick={() => backendFirst('release_manifest', () => createReleaseManifestRecord(state), {}, 'Release manifest created.')}>Release Manifest</button><button onClick={() => backendFirst('approval', () => requestApproval(state), {}, 'Approval requested.')}>Request Approval</button></div></section>
+            <section className="readme-card" id="security-review"><p className="eyebrow">Security Review</p><h2>Risk checks stay in the product loop</h2><p>Security Review tracks repo permissions, approval coverage, artifact integrity, and release blockers before packages move forward.</p><div className="quick-grid"><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'security-assistant'), { agent: 'security-assistant' }, 'Security review created.')}>Run Security Review</button><button onClick={() => planned('Policy exceptions')}>Policy Exceptions</button><button onClick={() => planned('Secret audit')}>Secret Audit</button></div></section>
+            <section className="readme-card" id="build-doctor"><p className="eyebrow">Build Doctor</p><h2>Build diagnosis should be one click away</h2><p>Build Doctor is the operator surface for failed build triage, artifact checks, packaging drift, and next repair actions across web, desktop, and Android outputs.</p><div className="quick-grid"><button onClick={() => backendFirst('ai_request', () => createAiRequest(state, 'build-failure-assistant'), { agent: 'build-failure-assistant' }, 'Build doctor request created.')}>Open Build Doctor</button><button onClick={() => backendFirst('build_flow', () => queueBuild(state), { target: 'android-apk', version: '0.1.0' }, 'Android build flow created.')}>Retry Android Build</button><button onClick={() => planned('Packaging diff')}>Packaging Diff</button></div></section>
             <section className="module-grid data-grid">
-              <article id="issues"><h3>Issues</h3>{state.issues.slice(0, 3).map((issue) => <p key={issue.issue_id}>#{issue.number} {issue.title} · {issue.status}</p>)}</article>
-              <article id="pull-requests"><h3>Pull Requests</h3>{state.pull_requests.slice(0, 3).map((pr) => <p key={pr.pr_id}>#{pr.number} {pr.title} · {pr.review_status}</p>)}</article>
-              <article id="builds"><h3>Builds</h3>{state.builds.slice(0, 3).map((build) => <p key={build.build_id}>{build.target} · {build.status}</p>)}</article>
-              <article id="packages"><h3>Packages</h3>{state.packages.slice(0, 3).map((pkg) => <p key={pkg.package_id}>{pkg.name} · {pkg.hash_status}</p>)}</article>
-              <article id="artifacts"><h3>Artifacts</h3>{artifacts.slice(0, 3).map((artifact) => <p key={artifact.artifact_id}>{artifact.name} · {artifact.signing_status}</p>)}</article>
-              <article id="release-manifests"><h3>Release Manifests</h3>{manifests.slice(0, 3).map((manifest) => <p key={manifest.manifest_id}>{manifest.version} · {manifest.approval_status}</p>)}</article>
-              <article id="approvals"><h3>Approvals</h3>{state.approvals.slice(0, 3).map((approval) => <p key={approval.approval_id}>{approval.scope} · {approval.decision}</p>)}</article>
+              <article id="issues"><h3>Issues</h3>{state.issues.slice(0, 3).map((issue) => <p key={issue.issue_id}>#{issue.number} {issue.title} | {issue.status}</p>)}</article>
+              <article id="pull-requests"><h3>Pull Requests</h3>{state.pull_requests.slice(0, 3).map((pr) => <p key={pr.pr_id}>#{pr.number} {pr.title} | {pr.review_status}</p>)}</article>
+              <article id="builds"><h3>Builds</h3>{state.builds.slice(0, 3).map((build) => <p key={build.build_id}>{build.target} | {build.status}</p>)}</article>
+              <article id="packages"><h3>Packages</h3>{state.packages.slice(0, 3).map((pkg) => <p key={pkg.package_id}>{pkg.name} | {pkg.hash_status}</p>)}</article>
+              <article id="artifacts"><h3>Artifacts</h3>{artifacts.slice(0, 3).map((artifact) => <p key={artifact.artifact_id}>{artifact.name} | {artifact.signing_status}</p>)}</article>
+              <article id="release-manifests"><h3>Release Manifests</h3>{manifests.slice(0, 3).map((manifest) => <p key={manifest.manifest_id}>{manifest.version} | {manifest.approval_status}</p>)}</article>
+              <article id="approvals"><h3>Approvals</h3>{state.approvals.slice(0, 3).map((approval) => <p key={approval.approval_id}>{approval.scope} | {approval.decision}</p>)}</article>
             </section>
           </div>
 
