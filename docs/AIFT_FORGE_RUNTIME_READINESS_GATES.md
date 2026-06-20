@@ -13,12 +13,14 @@ Ready:
 - Token check route exists.
 - Token revocation route exists.
 - Local setup route exists.
+- Smart HTTP Git RPC resolves a local token identity before write-class transport is allowed.
+- Anonymous Smart HTTP sessions are limited to public repository reads.
 
 Still required:
 
-- Repo transport requests must use the local session identity.
-- Anonymous sessions must be limited by repo visibility.
-- Failed checks must produce local audit records.
+- JSON transport request routes must use the same token actor path as Smart HTTP.
+- Failed checks must produce richer local audit records with actor and request metadata.
+- Runtime clone/fetch/push smoke evidence must be recorded after protected write gates are complete.
 
 ## Gate B: Local approval policy
 
@@ -47,10 +49,10 @@ Ready:
 - Local repo inspection exists.
 - Read utilities exist.
 - Smart transport bridge exists.
+- Smart HTTP write requests require a valid local token with `repo:write` scope.
 
 Still required:
 
-- Local session check must run inside the transport bridge.
 - Local approval policy must run before sensitive transport behavior.
 - Runtime evidence must be recorded after local smoke testing.
 

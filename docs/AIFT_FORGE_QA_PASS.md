@@ -23,7 +23,7 @@ This QA pass reviewed the committed source structure, API route map, UI action b
 | Git read API routes | Pass | API routes exist for branch, tag, commit, tree, blob, and diff reads. |
 | Git smart HTTP bridge | Partial pass | Smart HTTP bridge exists and calls local git stateless RPC. Runtime clone/fetch/push still must be tested. |
 | Local token auth | Pass | Local token creation, authentication, revocation, and seed routes exist. |
-| Token enforcement in Git bridge | Failing gap | Token module exists, but smart HTTP still needs final token actor wiring. |
+| Token enforcement in Git bridge | Partial pass | Smart HTTP access resolution now requires local token identity for receive-pack writes and limits anonymous sessions to public reads. Full runtime push evidence is still pending. |
 | Local setup automation | Pass | Local setup helper and API route exist. |
 | Protected ref/review gates | Failing gap | Gate module was blocked by tooling and still needs implementation. |
 | Android APK output | Not built | Android shell exists, but native project/APK build is not complete. |
@@ -126,9 +126,9 @@ The UI already treats some newer arrays as optional. Runtime should confirm old 
 
 ### Remaining high-priority security gaps
 
-- Smart HTTP still needs final token actor wiring.
+- Smart HTTP token actor wiring exists for receive-pack writes, but live push testing is still pending.
 - Protected ref/review gate enforcement is not finished.
-- Receive-pack writes should not be trusted until token actor and gate checks are wired and runtime-tested.
+- Receive-pack writes should not be trusted until protected gate checks are wired and live push behavior is runtime-tested.
 - Request size limits and streaming should replace large in-memory buffers.
 
 ## Runtime test plan when ready
@@ -150,9 +150,19 @@ The UI already treats some newer arrays as optional. Runtime should confirm old 
 15. Attempt desktop package after web build passes.
 16. Attempt Android project/APK after native Android project exists.
 
+## Local smoke evidence
+
+Run the focused local transport gate check with:
+
+```bash
+npm run smoke:git-access
+```
+
+This verifies anonymous public read access, private read denial, read-token private access, read-token write denial, write-token receive-pack permission, and blocked-action recording. It does not replace live Git client clone/fetch/push testing.
+
 ## Features still missing
 
-- Token actor enforcement in smart HTTP bridge.
+- Live Git client runtime evidence for smart HTTP clone/fetch/push.
 - Protected ref/review gate module.
 - Protected write enforcement.
 - Real user login screen.

@@ -1,4 +1,5 @@
-import { addRecord, makeId, now } from './store.mjs';
+import { addRecord, makeId } from './store.mjs';
+import { now } from './seed.mjs';
 
 export function createAndroidBuildRequest(input = {}) {
   const record = {

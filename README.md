@@ -49,6 +49,7 @@ Focused checks:
 npm run verify
 npm run readiness
 npm run deps:manifest
+npm run smoke:git-access
 ```
 
 ## Roadmap

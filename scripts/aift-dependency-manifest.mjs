@@ -26,7 +26,7 @@ const integrationFallbacks = {
   'sqlite-vec': 'LanceDB and keyword search remain available',
   '@xenova/transformers': 'Ollama/llama.cpp/vLLM/SGLang adapters remain available',
   'onnxruntime-node': 'Transformers.js and local model server adapters remain available',
-  tree-sitter: 'ripgrep/line-based index remains available',
+  'tree-sitter': 'ripgrep/line-based index remains available',
   '@noble/curves': 'Node crypto remains available for non-identity hashes',
   '@noble/hashes': 'Node crypto remains available for non-signature hashes',
   '@opentelemetry/api': 'local JSON audit log remains available',

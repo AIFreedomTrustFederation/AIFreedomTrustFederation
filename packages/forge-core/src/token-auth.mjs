@@ -22,6 +22,13 @@ export function createLocalToken(input = {}) {
   return { ...next, issued_token: token };
 }
 
+function roleForScopes(scopes = []) {
+  if (scopes.includes('admin:local')) return 'owner';
+  if (scopes.includes('repo:write')) return 'write';
+  if (scopes.includes('repo:read')) return 'reader';
+  return 'guest';
+}
+
 export function authenticateToken(input = {}) {
   const token = input.token || input.authorization || '';
   const cleanToken = String(token).replace(/^Bearer\s+/i, '').trim();
@@ -35,7 +42,7 @@ export function authenticateToken(input = {}) {
       user_id: record.user_id,
       display_name: record.user_id,
       node_id: input.node_id || 'local-node',
-      role: record.scopes.includes('admin:local') ? 'owner' : 'write'
+      role: roleForScopes(record.scopes || [])
     },
     scopes: record.scopes,
     token_id: record.token_id

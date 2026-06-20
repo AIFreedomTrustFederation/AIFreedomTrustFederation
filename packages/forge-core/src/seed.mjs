@@ -25,7 +25,16 @@ export function createSeedState() {
     releases: [],
     packages: [],
     builds: [],
+    artifacts: [],
+    release_manifests: [],
     approvals: [],
+    android_builds: [],
+    git_snapshots: [],
+    git_transport_events: [],
+    git_protocol_events: [],
+    tokens: [],
+    permissions: [],
+    blocked_actions: [],
     nodes: [
       {
         node_id: 'aift-vps-relay-root',

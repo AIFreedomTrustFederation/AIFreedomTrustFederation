@@ -105,7 +105,7 @@ if (fs.existsSync(rootPackagePath)) {
     if (!workspaces.has(workspace)) fail(`Root package.json missing workspace ${workspace}`);
     else pass(`Workspace registered: ${workspace}`);
   }
-  for (const scriptName of ['verify', 'readiness', 'api:dev', 'web:build', 'desktop:build:win', 'android:build']) {
+  for (const scriptName of ['verify', 'readiness', 'smoke:git-access', 'api:dev', 'web:build', 'desktop:build:win', 'android:build']) {
     if (!rootPackage.scripts?.[scriptName]) fail(`Root package.json missing script ${scriptName}`);
     else pass(`Root script registered: ${scriptName}`);
   }

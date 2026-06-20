@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import { spawnSync } from 'node:child_process';
-import { canAccessRepo } from './identity.mjs';
+import { canAccessRepo, recordBlockedAction } from './identity.mjs';
 import { safeRepoDir } from './git-disk.mjs';
 import { normalizeRepoSlug } from './git-store.mjs';
+import { authenticateToken } from './token-auth.mjs';
 
 const SERVICES = new Set(['git-upload-pack', 'git-receive-pack']);
 
@@ -38,11 +39,63 @@ function repoPathFor(repo_id) {
   return safeRepoDir(repo_id);
 }
 
-function accessFor(repo_id, write = false) {
-  const access = canAccessRepo({ repo_id, actor: { role: 'owner' } });
-  if (!access.allowed) return false;
-  if (!write) return true;
-  return ['owner', 'admin', 'write'].includes(access.role);
+function authHeader(req) {
+  return req.headers?.authorization || req.headers?.Authorization || '';
+}
+
+function requestSession(req) {
+  const session = authenticateToken({ authorization: authHeader(req) });
+  if (session.authenticated) return session;
+  return {
+    authenticated: false,
+    actor: {
+      user_id: 'anonymous',
+      display_name: 'Anonymous',
+      node_id: 'local-node',
+      role: 'guest'
+    },
+    scopes: []
+  };
+}
+
+function hasScope(scopes = [], requiredScope) {
+  if (scopes.includes('admin:local')) return true;
+  if (requiredScope === 'repo:read' && scopes.includes('repo:write')) return true;
+  return scopes.includes(requiredScope);
+}
+
+function denied(repo_id, service, reason) {
+  recordBlockedAction({ action: service, repo_id, reason });
+  return { allowed: false, reason };
+}
+
+export function resolveGitSmartHttpAccess(repo_id, req, service) {
+  const isWrite = service === 'git-receive-pack';
+  const session = requestSession(req);
+  const access = canAccessRepo({ repo_id, actor: session.actor });
+
+  if (!access.allowed) {
+    return denied(repo_id, service, 'Repository access required.');
+  }
+
+  if (!isWrite) {
+    if (access.visibility !== 'public' && !hasScope(session.scopes, 'repo:read')) {
+      return denied(repo_id, service, 'Private repository reads require a local token with repo:read scope.');
+    }
+    return { allowed: true, actor: access.actor, role: access.role, authenticated: session.authenticated };
+  }
+
+  if (!session.authenticated) {
+    return denied(repo_id, service, 'Git write operations require a valid local token.');
+  }
+  if (!hasScope(session.scopes, 'repo:write')) {
+    return denied(repo_id, service, 'Git write operations require repo:write scope.');
+  }
+  if (!['owner', 'admin', 'write'].includes(access.role)) {
+    return denied(repo_id, service, 'Git write operations require owner, admin, or write role.');
+  }
+
+  return { allowed: true, actor: access.actor, role: access.role, authenticated: true };
 }
 
 function runGitService(service, repoPath, input) {
@@ -75,9 +128,9 @@ export async function handleGitSmartHttp(req, res, url) {
       sendText(res, 400, 'Unsupported Git service.');
       return true;
     }
-    const isWrite = service === 'git-receive-pack';
-    if (!accessFor(repo_id, isWrite)) {
-      sendText(res, 403, 'AIFT Forge permission denied.');
+    const access = resolveGitSmartHttpAccess(repo_id, req, service);
+    if (!access.allowed) {
+      sendText(res, 403, `AIFT Forge permission denied: ${access.reason}`);
       return true;
     }
     const result = advertiseRefs(service, repoPath);
@@ -95,9 +148,9 @@ export async function handleGitSmartHttp(req, res, url) {
 
   if (req.method === 'POST' && (action === 'git-upload-pack' || action === 'git-receive-pack')) {
     const service = action;
-    const isWrite = service === 'git-receive-pack';
-    if (!accessFor(repo_id, isWrite)) {
-      sendText(res, 403, 'AIFT Forge permission denied.');
+    const access = resolveGitSmartHttpAccess(repo_id, req, service);
+    if (!access.allowed) {
+      sendText(res, 403, `AIFT Forge permission denied: ${access.reason}`);
       return true;
     }
     const input = await readRaw(req);

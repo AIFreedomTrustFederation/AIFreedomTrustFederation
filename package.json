@@ -15,6 +15,7 @@
     "readiness": "node scripts/aift-forge-readiness.mjs",
     "deps:manifest": "node scripts/aift-dependency-manifest.mjs",
     "qa:deps": "npm run deps:manifest && npm run verify && npm run readiness",
+    "smoke:git-access": "node scripts/smoke-git-access.mjs",
     "test": "vitest run",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
