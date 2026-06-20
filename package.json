@@ -39,7 +39,7 @@
     "@playwright/test": "latest",
     "@types/node": "latest",
     "eslint": "latest",
-    "license-checker-rseidelsohn": "latest",
+    "license-checker-rseidelsohn": "^4.4.2",
     "prettier": "latest",
     "typescript": "latest",
     "vitest": "latest"

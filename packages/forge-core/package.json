@@ -10,21 +10,21 @@
     "@noble/hashes": "latest",
     "@opentelemetry/api": "latest",
     "@sqlite.org/sqlite-wasm": "latest",
-    "@xenova/transformers": "latest",
-    "automerge": "latest",
+    "@huggingface/transformers": "latest",
+    "@automerge/automerge": "latest",
     "drizzle-orm": "latest",
     "isomorphic-git": "latest",
     "kysely": "latest",
     "libsql": "latest",
     "prom-client": "latest",
     "simple-git": "latest",
-    "tree-sitter": "latest",
     "yjs": "latest",
     "zod": "latest"
   },
   "optionalDependencies": {
     "better-sqlite3": "latest",
     "onnxruntime-node": "latest",
-    "sqlite-vec": "latest"
+    "sqlite-vec": "latest",
+    "tree-sitter": "latest"
   }
 }

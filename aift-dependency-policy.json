@@ -11,11 +11,7 @@
     "deprecation-plan-required"
   ],
   "tiers": {
-    "required_runtime": [
-      "node",
-      "native-git",
-      "json-store"
-    ],
+    "required_runtime": ["node", "native-git", "json-store"],
     "preferred_runtime": [
       "fastify",
       "sqlite-libsql",
@@ -54,12 +50,27 @@
   "fallbacks": {
     "api_framework": ["fastify", "hono", "raw-node-http"],
     "database": ["libsql", "better-sqlite3", "sqlite-wasm", "json-store"],
-    "collaboration": ["yjs", "automerge", "append-only-records"],
+    "collaboration": ["yjs", "@automerge/automerge", "append-only-records"],
     "git_engine": ["native-git", "isomorphic-git", "simple-git"],
     "vector_search": ["lancedb", "sqlite-vec", "keyword-index"],
-    "ai_inference": ["ollama-compatible", "llama-cpp-compatible", "vllm-compatible", "sglang-compatible", "transformers-js", "manual-review-only"],
-    "observability": ["opentelemetry", "prometheus-client", "local-json-audit-log"],
-    "release_inventory": ["cyclonedx", "aift-dependency-manifest", "manual-manifest"]
+    "ai_inference": [
+      "ollama-compatible",
+      "llama-cpp-compatible",
+      "vllm-compatible",
+      "sglang-compatible",
+      "transformers-js",
+      "manual-review-only"
+    ],
+    "observability": [
+      "opentelemetry",
+      "prometheus-client",
+      "local-json-audit-log"
+    ],
+    "release_inventory": [
+      "cyclonedx",
+      "aift-dependency-manifest",
+      "manual-manifest"
+    ]
   },
   "security_requirements": [
     "no secrets committed",
