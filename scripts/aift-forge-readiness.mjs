@@ -17,6 +17,9 @@ const checks = [
   ['forge manifest', 'aift-forge-manifest.json'],
   ['ai manifest', 'aift-ai-manifest.json'],
   ['sovereign policy', 'docs/AIFT_FORGE_SOVEREIGN_POLICY.md'],
+  ['status record', 'docs/status.md'],
+  ['validation guide', 'docs/validation.md'],
+  ['security and privacy guide', 'docs/security-and-privacy.md'],
   ['packaging requirements', 'docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md'],
   ['verification script', 'scripts/verify-forge-structure.mjs'],
 ];

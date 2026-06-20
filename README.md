@@ -34,13 +34,20 @@ npm install
 
 ## Verification
 
-Recommended checks:
+Current local verification gate:
+
+```bash
+npm run qa:local
+```
+
+Target checks:
 
 ```bash
 npm run qa:deps
 npm run test
 npm run lint
-npm run format:check
+npm audit --audit-level=high
+npm run web:build
 ```
 
 Focused checks:
@@ -51,6 +58,8 @@ npm run readiness
 npm run deps:manifest
 npm run smoke:git-access
 ```
+
+`npm run format:check` remains a repository target, but legacy files are not yet normalized. Format files changed in the current work slice and avoid broad formatting-only rewrites unless that is the intended task.
 
 ## Roadmap
 

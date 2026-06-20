@@ -19,6 +19,9 @@ const requiredFiles = [
   'docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md',
   'docs/AIFT_FORGE_BUILD_READINESS.md',
   'docs/AIFT_FORGE_RELEASE_CHECKLIST.md',
+  'docs/status.md',
+  'docs/validation.md',
+  'docs/security-and-privacy.md',
   'docs/INSTALLABLE_APP_ARCHITECTURE.md',
   'scripts/aift-forge-readiness.mjs',
   'apps/product-web/package.json',
@@ -105,7 +108,7 @@ if (fs.existsSync(rootPackagePath)) {
     if (!workspaces.has(workspace)) fail(`Root package.json missing workspace ${workspace}`);
     else pass(`Workspace registered: ${workspace}`);
   }
-  for (const scriptName of ['verify', 'readiness', 'smoke:git-access', 'api:dev', 'web:build', 'desktop:build:win', 'android:build']) {
+  for (const scriptName of ['verify', 'readiness', 'qa:local', 'smoke:git-access', 'api:dev', 'web:build', 'desktop:build:win', 'android:build']) {
     if (!rootPackage.scripts?.[scriptName]) fail(`Root package.json missing script ${scriptName}`);
     else pass(`Root script registered: ${scriptName}`);
   }
@@ -141,6 +144,9 @@ for (const [file, labels] of [
   ['docs/AIFT_FORGE_PACKAGING_REQUIREMENTS.md', ['Windows installer', 'Windows portable app', 'Android APK', 'artifact hash', 'signing status']],
   ['docs/AIFT_FORGE_BUILD_READINESS.md', ['Build readiness checklist', 'product web bundle', 'Windows desktop installer', 'Android installable app package']],
   ['docs/AIFT_FORGE_RELEASE_CHECKLIST.md', ['Structure', 'Build verification', 'Package verification', 'Human approval']],
+  ['docs/status.md', ['Current implementation status', 'No stable release is claimed', 'Known blockers']],
+  ['docs/validation.md', ['Local verification gate', 'Command matrix', 'Failure reporting']],
+  ['docs/security-and-privacy.md', ['No secrets in public source', 'Human approval boundaries', 'Security status']],
 ]) {
   const fullPath = path.join(root, file);
   if (!fs.existsSync(fullPath)) continue;

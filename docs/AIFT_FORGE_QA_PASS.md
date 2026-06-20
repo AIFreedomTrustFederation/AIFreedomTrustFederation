@@ -1,10 +1,10 @@
 # AIFT Forge QA Pass
 
-Status: pre-runtime QA, no shell execution yet.
+Status: local verification and smoke QA recorded. Runtime package installers and live Git client push are not verified.
 
 ## Scope
 
-This QA pass reviewed the committed source structure, API route map, UI action behavior, data shape, Git backend readiness, local auth foundation, packaging readiness, and known gaps.
+This QA pass reviewed the committed source structure, API route map, UI action behavior, data shape, Git backend readiness, local auth foundation, packaging readiness, installed test/lint/audit readiness, and known gaps.
 
 ## Result summary
 
@@ -24,6 +24,10 @@ This QA pass reviewed the committed source structure, API route map, UI action b
 | Git smart HTTP bridge | Partial pass | Smart HTTP bridge exists and calls local git stateless RPC. Runtime clone/fetch/push still must be tested. |
 | Local token auth | Pass | Local token creation, authentication, revocation, and seed routes exist. |
 | Token enforcement in Git bridge | Partial pass | Smart HTTP access resolution now requires local token identity for receive-pack writes and limits anonymous sessions to public reads. Full runtime push evidence is still pending. |
+| Unit test gate | Pass | `npm test` runs Vitest coverage for Smart HTTP token access. |
+| Lint gate | Pass | `npm run lint` runs ESLint with the repo-local flat config. |
+| High-severity audit gate | Pass | `npm audit --audit-level=high` passes locally. |
+| Web build | Pass | `npm run web:build` builds the product web shell locally. |
 | Local setup automation | Pass | Local setup helper and API route exist. |
 | Protected ref/review gates | Failing gap | Gate module was blocked by tooling and still needs implementation. |
 | Android APK output | Not built | Android shell exists, but native project/APK build is not complete. |
@@ -141,7 +145,7 @@ The UI already treats some newer arrays as optional. Runtime should confirm old 
 6. Inspect repo.
 7. Test `info/refs` advertisement.
 8. Test clone/fetch.
-9. Test push only after token actor and gate enforcement are complete.
+9. Test push only after protected gate enforcement is complete.
 10. Run web UI and confirm backend status is online.
 11. Click every working UI action once.
 12. Confirm state collections update.
@@ -185,6 +189,6 @@ This verifies anonymous public read access, private read denial, read-token priv
 
 ## QA decision
 
-AIFT Forge is ready for first local runtime smoke testing of the API, persistent records, UI records, Git init/inspect, Git read routes, and smart HTTP read-path experiments.
+AIFT Forge is ready for local runtime smoke testing of the API, persistent records, UI records, Git init/inspect, Git read routes, and smart HTTP read-path experiments.
 
-AIFT Forge is not yet ready to trust live push workflows until token actor wiring and protected write gates are complete.
+AIFT Forge is not yet ready to trust live push workflows until protected write gates and live Git client push evidence are complete.
