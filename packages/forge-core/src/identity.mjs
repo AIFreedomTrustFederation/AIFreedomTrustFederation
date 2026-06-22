@@ -37,6 +37,9 @@ export function recordBlockedAction(input = {}) {
     action: input.action || 'unknown',
     repo_id: input.repo_id || 'aift-root',
     reason: input.reason || 'Permission required.',
+    actor: input.actor || null,
+    ref: input.ref || '',
+    policy: input.policy || '',
     review_status: 'pending',
     created_at: now()
   };

@@ -4,6 +4,7 @@ import { canAccessRepo, recordBlockedAction } from './identity.mjs';
 import { safeRepoDir } from './git-disk.mjs';
 import { normalizeRepoSlug } from './git-store.mjs';
 import { authenticateToken } from './token-auth.mjs';
+import { enforceProtectedWritePolicy, parseReceivePackUpdates } from './protected-write-policy.mjs';
 
 const SERVICES = new Set(['git-upload-pack', 'git-receive-pack']);
 
@@ -99,14 +100,14 @@ export function resolveGitSmartHttpAccess(repo_id, req, service) {
 }
 
 function runGitService(service, repoPath, input) {
-  return spawnSync('git', [service, '--stateless-rpc', repoPath], {
+  return spawnSync('git', [service.replace(/^git-/, ''), '--stateless-rpc', repoPath], {
     input,
     maxBuffer: 1024 * 1024 * 128
   });
 }
 
 function advertiseRefs(service, repoPath) {
-  return spawnSync('git', [service, '--stateless-rpc', '--advertise-refs', repoPath], {
+  return spawnSync('git', [service.replace(/^git-/, ''), '--stateless-rpc', '--advertise-refs', repoPath], {
     maxBuffer: 1024 * 1024 * 32
   });
 }
@@ -154,6 +155,18 @@ export async function handleGitSmartHttp(req, res, url) {
       return true;
     }
     const input = await readRaw(req);
+    if (service === 'git-receive-pack') {
+      const policy = enforceProtectedWritePolicy({
+        action: service,
+        repo_id,
+        actor: access.actor,
+        ref_updates: parseReceivePackUpdates(input)
+      });
+      if (!policy.allowed) {
+        sendText(res, 403, `AIFT Forge protected write denied: ${policy.reason}`);
+        return true;
+      }
+    }
     const result = runGitService(service, repoPath, input);
     if (result.status !== 0) {
       sendText(res, 500, result.stderr?.toString('utf8') || 'Git RPC failed.');

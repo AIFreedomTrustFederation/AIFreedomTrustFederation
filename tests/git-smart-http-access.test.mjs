@@ -5,6 +5,11 @@ import path from "node:path";
 
 import { grantRepoPermission } from "../packages/forge-core/src/identity.mjs";
 import { resolveGitSmartHttpAccess } from "../packages/forge-core/src/git-rpc-http.mjs";
+import {
+  checkProtectedWritePolicy,
+  enforceProtectedWritePolicy,
+  parseReceivePackUpdates,
+} from "../packages/forge-core/src/protected-write-policy.mjs";
 import { createLocalToken } from "../packages/forge-core/src/token-auth.mjs";
 import {
   readState,
@@ -18,6 +23,14 @@ function request(token) {
   return token
     ? { headers: { authorization: `Bearer ${token}` } }
     : { headers: {} };
+}
+
+function receivePackLine(ref) {
+  const oldOid = "0".repeat(40);
+  const newOid = "1".repeat(40);
+  const line = `${oldOid} ${newOid} ${ref}\0 report-status\n`;
+  const size = (Buffer.byteLength(line) + 4).toString(16).padStart(4, "0");
+  return Buffer.concat([Buffer.from(size + line, "utf8"), Buffer.from("0000")]);
 }
 
 beforeEach(() => {
@@ -98,5 +111,50 @@ describe("Git smart HTTP token access", () => {
       "git-receive-pack",
     );
     expect(authorizedWrite.allowed).toBe(true);
+  });
+
+  it("parses receive-pack ref updates for policy checks", () => {
+    const updates = parseReceivePackUpdates(receivePackLine("refs/heads/main"));
+
+    expect(updates).toHaveLength(1);
+    expect(updates[0].ref).toBe("refs/heads/main");
+  });
+
+  it("blocks protected writes until an approved local approval exists", () => {
+    const denied = enforceProtectedWritePolicy({
+      repo_id: "aift-root",
+      action: "git-receive-pack",
+      ref_updates: [{ ref: "refs/heads/main", old_oid: "0".repeat(40), new_oid: "1".repeat(40) }],
+    });
+
+    expect(denied.allowed).toBe(false);
+    expect(denied.reason).toMatch(/protected ref refs\/heads\/main/);
+    expect(readState().blocked_actions[0].policy).toBe("protected-write");
+
+    const feature = checkProtectedWritePolicy({
+      repo_id: "aift-root",
+      ref_updates: [{ ref: "refs/heads/feature/demo", old_oid: "0".repeat(40), new_oid: "1".repeat(40) }],
+    });
+    expect(feature.allowed).toBe(true);
+
+    writeState({
+      ...readState(),
+      approvals: [
+        {
+          approval_id: "approval-main",
+          scope: "git-protected-write",
+          scope_id: "aift-root:refs/heads/main",
+          decision: "approved",
+          reason: "Approve main branch smoke write.",
+          created_at: new Date().toISOString(),
+        },
+      ],
+    });
+
+    const approved = checkProtectedWritePolicy({
+      repo_id: "aift-root",
+      ref_updates: [{ ref: "refs/heads/main", old_oid: "0".repeat(40), new_oid: "1".repeat(40) }],
+    });
+    expect(approved.allowed).toBe(true);
   });
 });

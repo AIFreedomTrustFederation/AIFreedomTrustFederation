@@ -1,6 +1,6 @@
 # AIFT Forge QA Pass
 
-Status: local verification and smoke QA recorded. Runtime package installers and live Git client push are not verified.
+Status: local verification and smoke QA recorded. Runtime package installers are not verified.
 
 ## Scope
 
@@ -21,15 +21,15 @@ This QA pass reviewed the committed source structure, API route map, UI action b
 | Disk-backed Git repo init | Pass | Bare repo init and inspect utilities exist. |
 | Git read utilities | Pass | Branch, tag, commit, tree, blob, and diff readers exist. |
 | Git read API routes | Pass | API routes exist for branch, tag, commit, tree, blob, and diff reads. |
-| Git smart HTTP bridge | Partial pass | Smart HTTP bridge exists and calls local git stateless RPC. Runtime clone/fetch/push still must be tested. |
+| Git smart HTTP bridge | Partial pass | Smart HTTP bridge exists, calls local git stateless RPC, runs protected-ref policy before receive-pack execution, and passes disposable live clone/fetch/push smoke. |
 | Local token auth | Pass | Local token creation, authentication, revocation, and seed routes exist. |
-| Token enforcement in Git bridge | Partial pass | Smart HTTP access resolution now requires local token identity for receive-pack writes and limits anonymous sessions to public reads. Full runtime push evidence is still pending. |
+| Token enforcement in Git bridge | Partial pass | Smart HTTP access resolution requires local token identity for receive-pack writes and limits anonymous sessions to public reads. Disposable runtime push evidence exists. |
 | Unit test gate | Pass | `npm test` runs Vitest coverage for Smart HTTP token access. |
 | Lint gate | Pass | `npm run lint` runs ESLint with the repo-local flat config. |
 | High-severity audit gate | Pass | `npm audit --audit-level=high` passes locally. |
 | Web build | Pass | `npm run web:build` builds the product web shell locally. |
 | Local setup automation | Pass | Local setup helper and API route exist. |
-| Protected ref/review gates | Failing gap | Gate module was blocked by tooling and still needs implementation. |
+| Protected ref/review gates | Partial pass | Protected-ref writes require approved local `git-protected-write` approval; review-status merge policy still needs implementation. |
 | Android APK output | Not built | Android shell exists, but native project/APK build is not complete. |
 | Windows installer output | Not built | Desktop shell exists, but installer has not been built/tested. |
 | AI provider execution | Not built | AI request records exist; real provider adapters are not yet active. |
@@ -130,9 +130,9 @@ The UI already treats some newer arrays as optional. Runtime should confirm old 
 
 ### Remaining high-priority security gaps
 
-- Smart HTTP token actor wiring exists for receive-pack writes, but live push testing is still pending.
-- Protected ref/review gate enforcement is not finished.
-- Receive-pack writes should not be trusted until protected gate checks are wired and live push behavior is runtime-tested.
+- Smart HTTP token actor wiring exists for receive-pack writes, and disposable live push testing passes.
+- Protected-ref enforcement exists; review-status merge policy is not finished.
+- Receive-pack writes should not be trusted for production until review/status policy and request-size hardening are complete.
 - Request size limits and streaming should replace large in-memory buffers.
 
 ## Runtime test plan when ready
@@ -145,7 +145,7 @@ The UI already treats some newer arrays as optional. Runtime should confirm old 
 6. Inspect repo.
 7. Test `info/refs` advertisement.
 8. Test clone/fetch.
-9. Test push only after protected gate enforcement is complete.
+9. Re-run disposable live push smoke after transport policy changes.
 10. Run web UI and confirm backend status is online.
 11. Click every working UI action once.
 12. Confirm state collections update.
@@ -162,13 +162,19 @@ Run the focused local transport gate check with:
 npm run smoke:git-access
 ```
 
-This verifies anonymous public read access, private read denial, read-token private access, read-token write denial, write-token receive-pack permission, and blocked-action recording. It does not replace live Git client clone/fetch/push testing.
+This verifies anonymous public read access, private read denial, read-token private access, read-token write denial, write-token receive-pack permission, protected-ref blocking, unprotected feature-branch policy allowance, and blocked-action recording. It does not replace live Git client clone/fetch/push testing.
+
+Run the live Git client smoke with:
+
+```bash
+npm run smoke:git-live
+```
+
+This starts a disposable local API server and verifies real Git clone, fetch, feature-branch push, protected-main denial, and blocked-action recording over Smart HTTP.
 
 ## Features still missing
 
-- Live Git client runtime evidence for smart HTTP clone/fetch/push.
-- Protected ref/review gate module.
-- Protected write enforcement.
+- Review-status merge policy beyond protected-ref approval.
 - Real user login screen.
 - User/org/team UI.
 - Issue comments.
@@ -191,4 +197,4 @@ This verifies anonymous public read access, private read denial, read-token priv
 
 AIFT Forge is ready for local runtime smoke testing of the API, persistent records, UI records, Git init/inspect, Git read routes, and smart HTTP read-path experiments.
 
-AIFT Forge is not yet ready to trust live push workflows until protected write gates and live Git client push evidence are complete.
+AIFT Forge is not yet ready to production-trust live push workflows until review/status policy and Git RPC hardening are complete.

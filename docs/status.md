@@ -12,8 +12,8 @@ This is the canonical status record for AIFT Forge. It separates implemented beh
 | Local API             | Foundation             | Health, state, records, Git, token, setup, and artifact routes exist.            |
 | Persistent state      | Foundation             | JSON-backed local state helpers exist.                                           |
 | Git read operations   | Foundation             | Branch, tag, commit, tree, blob, and diff readers exist.                         |
-| Smart HTTP transport  | Partial                | Token-aware access gate is covered by `npm test` and `npm run smoke:git-access`. |
-| Protected writes      | Not trusted            | Protected ref/review gate and live push evidence are still pending.              |
+| Smart HTTP transport  | Partial                | Token-aware access, protected-ref policy, and disposable live clone/fetch/push are covered by local smoke checks. |
+| Protected writes      | Partial                | Feature-branch push and protected-main denial are live-smoked; review-status merge policy is still pending. |
 | Desktop package       | Not built              | Electron metadata exists; installer output is not verified.                      |
 | Android package       | Not built              | Android shell exists; native project/APK output is not verified.                 |
 | AI provider execution | Not built              | AI request records exist; real provider adapters are not active.                 |
@@ -45,13 +45,12 @@ Known non-gate:
 - No production deployment is claimed.
 - No audited security status is claimed.
 - No artifact signing guarantee is claimed.
-- No live Git push workflow is trusted until protected write gates and runtime push evidence exist.
+- No live Git push workflow is production-trusted until review-status policy, request limits, and release hardening exist.
 
 ## Known blockers
 
-- Protected ref/review gate module.
+- Review-status merge policy beyond protected-ref approval.
 - JSON transport request routes need the same token actor path as Smart HTTP.
-- Live Git client clone/fetch/push runtime evidence.
 - Request size limits and streaming for Git RPC paths.
 - Windows installer build and inspection.
 - Android native project generation and APK inspection.
@@ -61,4 +60,4 @@ Known non-gate:
 
 ## Next best repair
 
-Implement the protected write policy gate before trusting any Smart HTTP receive-pack path. The gate should produce local blocked-action or approval records before any sensitive write behavior is treated as valid.
+Implement review-status merge policy beyond protected-ref approval, then harden Git RPC request size limits and streaming.

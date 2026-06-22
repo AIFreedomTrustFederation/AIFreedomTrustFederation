@@ -11,7 +11,7 @@ This document records AIFT Forge security and privacy boundaries. It is an engin
 | Token storage            | Local tokens are stored as SHA-256 hashes                      |
 | Public mirror dependency | Optional mirror only, not runtime source of truth              |
 | Stable release signing   | Not implemented                                                |
-| Protected Git writes     | Not trusted until protected gates and live push evidence exist |
+| Protected Git writes     | Protected-ref gate and disposable live push smoke exist; not trusted for production until review/status hardening exists |
 
 ## No secrets in public source
 
@@ -47,13 +47,13 @@ AIFT Forge is local-first. Current transport rules:
 - anonymous Smart HTTP sessions may read public repositories only;
 - private repository reads require local token identity and repo permission;
 - receive-pack writes require a valid local token with `repo:write` or `admin:local` scope;
-- denied transport attempts must produce local blocked-action records.
+- protected refs require approved local `git-protected-write` approval records;
+- denied transport and policy attempts must produce local blocked-action records.
 
 Remaining transport work:
 
-- protected ref and review gates;
-- actor metadata on blocked-action records;
-- live Git client clone/fetch/push evidence;
+- review-status merge gates beyond protected-ref approval;
+- production review/status policy for merge-class writes;
 - request size limits and streaming for Git RPC.
 
 ## AI privacy

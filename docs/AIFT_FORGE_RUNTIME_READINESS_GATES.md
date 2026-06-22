@@ -20,7 +20,7 @@ Still required:
 
 - JSON transport request routes must use the same token actor path as Smart HTTP.
 - Failed checks must produce richer local audit records with actor and request metadata.
-- Runtime clone/fetch/push smoke evidence must be recorded after protected write gates are complete.
+- Re-run runtime clone/fetch/push smoke evidence after future transport policy changes.
 
 ## Gate B: Local approval policy
 
@@ -32,12 +32,13 @@ Ready:
 - Build flow records exist.
 - Package and release manifest records exist.
 - Local audit records exist.
+- Default protected-ref policy record exists.
+- Protected-ref policy check runs before Smart HTTP receive-pack execution.
 
 Still required:
 
-- Default local policy record.
 - Policy status readout.
-- Policy check before sensitive repo operations.
+- Review-status merge policy beyond protected-ref approval.
 
 ## Gate C: Trusted transport state
 
@@ -50,11 +51,13 @@ Ready:
 - Read utilities exist.
 - Smart transport bridge exists.
 - Smart HTTP write requests require a valid local token with `repo:write` scope.
+- Smart HTTP receive-pack POST requests run protected-ref policy before invoking Git.
+- Disposable live Git client smoke verifies clone, fetch, feature-branch push, and protected-main denial.
 
 Still required:
 
-- Local approval policy must run before sensitive transport behavior.
-- Runtime evidence must be recorded after local smoke testing.
+- Review/status policy for merge-class writes.
+- Request size limits and streaming hardening.
 
 ## Allowed tests before all gates pass
 
@@ -68,6 +71,6 @@ Still required:
 
 ## Deferred until all gates pass
 
-- Trusting sensitive repo updates.
+- Trusting production-sensitive repo updates.
 - Treating remote-style repo writes as production-ready.
 - Public exposure of transport endpoints.

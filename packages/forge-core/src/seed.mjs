@@ -35,6 +35,16 @@ export function createSeedState() {
     tokens: [],
     permissions: [],
     blocked_actions: [],
+    protected_write_policies: [
+      {
+        policy_id: 'policy-aift-root-protected-writes',
+        repo_id: 'aift-root',
+        protected_refs: ['refs/heads/main', 'refs/heads/master', 'refs/heads/release/*', 'refs/tags/*'],
+        require_approval: true,
+        status: 'active',
+        created_at: timestamp
+      }
+    ],
     nodes: [
       {
         node_id: 'aift-vps-relay-root',

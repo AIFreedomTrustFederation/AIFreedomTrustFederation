@@ -11,6 +11,7 @@ const { readState, resetState, writeState } = await import('../packages/forge-co
 const { grantRepoPermission } = await import('../packages/forge-core/src/identity.mjs');
 const { createLocalToken } = await import('../packages/forge-core/src/token-auth.mjs');
 const { resolveGitSmartHttpAccess } = await import('../packages/forge-core/src/git-rpc-http.mjs');
+const { checkProtectedWritePolicy, enforceProtectedWritePolicy } = await import('../packages/forge-core/src/protected-write-policy.mjs');
 
 function req(token) {
   return token ? { headers: { authorization: `Bearer ${token}` } } : { headers: {} };
@@ -42,8 +43,22 @@ grantRepoPermission({ repo_id: 'aift-root', user_id: 'writer', role: 'write' });
 access = resolveGitSmartHttpAccess('aift-root', req(writeToken), 'git-receive-pack');
 assert.equal(access.allowed, true, 'receive-pack should allow a write token with write permission');
 
+let policy = enforceProtectedWritePolicy({
+  repo_id: 'aift-root',
+  action: 'git-receive-pack',
+  ref_updates: [{ ref: 'refs/heads/main', old_oid: '0'.repeat(40), new_oid: '1'.repeat(40) }]
+});
+assert.equal(policy.allowed, false, 'protected main branch writes should require approval');
+assert.match(policy.reason, /protected ref refs\/heads\/main/, 'protected write denial should name the ref');
+
+policy = checkProtectedWritePolicy({
+  repo_id: 'aift-root',
+  ref_updates: [{ ref: 'refs/heads/feature/smoke', old_oid: '0'.repeat(40), new_oid: '1'.repeat(40) }]
+});
+assert.equal(policy.allowed, true, 'unprotected feature branch writes should pass protected-write policy');
+
 const blocked = readState().blocked_actions || [];
-assert.ok(blocked.length >= 2, 'denied transport attempts should create blocked action records');
+assert.ok(blocked.length >= 3, 'denied transport attempts should create blocked action records');
 
 fs.rmSync(tempHome, { recursive: true, force: true });
-console.log(JSON.stringify({ ok: true, check: 'git-smart-http-access', blocked_actions_recorded: blocked.length }, null, 2));
+console.log(JSON.stringify({ ok: true, check: 'git-smart-http-access', blocked_actions_recorded: blocked.length, protected_write_policy: 'active' }, null, 2));

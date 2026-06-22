@@ -24,6 +24,7 @@ This gate runs structure/dependency checks, unit tests, lint, Git access smoke c
 | `npm test`                     | Run Vitest behavior tests.                                                | Code changes.                            |
 | `npm run lint`                 | Run ESLint over JS/MJS/CJS code.                                          | Code changes.                            |
 | `npm run smoke:git-access`     | Exercise Smart HTTP token gate behavior against an isolated temp store.   | Git transport or auth changes.           |
+| `npm run smoke:git-live`       | Run live Git clone/fetch/push against a disposable local Smart HTTP server. | Runtime transport evidence.              |
 | `npm audit --audit-level=high` | Fail on high or critical dependency vulnerabilities.                      | Dependency changes and release prep.     |
 | `npm run web:build`            | Build the Vite product web shell.                                         | UI and release prep.                     |
 | `npm run license:check`        | Summarize production license data.                                        | Release prep.                            |
