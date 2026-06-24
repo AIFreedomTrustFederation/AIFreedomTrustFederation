@@ -21,7 +21,7 @@ This is the canonical status record for AIFT Forge. It separates implemented beh
 
 ## Current verification evidence
 
-Last local verification pass: 2026-06-20 on the Windows local builder.
+Last local verification pass: 2026-06-23 on the Windows local builder.
 
 Passing checks:
 
@@ -30,6 +30,7 @@ Passing checks:
 - `npm test`
 - `npm run lint`
 - `npm run smoke:git-access`
+- `npm run smoke:git-live`
 - `npm audit --audit-level=high`
 - `npm run web:build`
 - `npm run license:check`
