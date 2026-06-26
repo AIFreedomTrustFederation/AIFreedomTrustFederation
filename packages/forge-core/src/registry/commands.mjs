@@ -21,6 +21,13 @@ export const commandRegistry = [
     status: "active"
   },
   {
+    name: "mission",
+    description: "Manage mission-level authorization, scope, limits, and progress.",
+    category: "governance",
+    phase: "1",
+    status: "active"
+  },
+  {
     name: "cycle",
     description: "Run Forge observe-think-build-verify-learn workflow cycle.",
     category: "orchestration",

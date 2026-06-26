@@ -18,6 +18,7 @@ import { resume } from "../commands/resume.mjs";
 import { next } from "../commands/next.mjs";
 import { work } from "../commands/work.mjs";
 import { cycle } from "../commands/cycle.mjs";
+import { mission } from "../commands/mission.mjs";
 
 async function main() {
 const command = process.argv[2] ?? "help";
@@ -46,6 +47,7 @@ function help() {
   console.log("  resume     Resume from last known Forge task");
   console.log("  next       Show or approve next Forge task");
   console.log("  cycle      Run Forge observe-think-build-verify-learn cycle");
+  console.log("  mission    Manage Forge mission authorization");
   console.log("  help       Show this help");
 }
 
@@ -103,6 +105,9 @@ switch (command) {
     break;
   case "cycle":
     cycle(process.argv.slice(3));
+    break;
+  case "mission":
+    mission(process.argv.slice(3));
     break;
   case "help":
   case "--help":

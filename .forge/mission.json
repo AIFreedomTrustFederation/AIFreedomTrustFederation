@@ -1,0 +1,100 @@
+{
+  "schema": "aift.forge.mission.v1",
+  "id": "build-booksmith-desktop",
+  "title": "Build BookSmith Desktop Environment",
+  "authorityLevel": 2,
+  "state": "approved",
+  "targetRepository": "BookSmith-Federation-OS",
+  "risk": "low",
+  "progress": 0,
+  "estimatedTasks": 12,
+  "estimatedFiles": 18,
+  "scope": [
+    "Window Manager",
+    "Dock Manager",
+    "App Registry",
+    "Launcher Routing",
+    "Settings Surface",
+    "Taskbar Foundation"
+  ],
+  "limits": {
+    "mayCreateFiles": true,
+    "mayModifyExistingUi": true,
+    "mayModifyExistingApi": false,
+    "mayDeleteFiles": false,
+    "mayTouchOtherRepositories": false,
+    "mayInstallDependencies": false,
+    "mayCommitAutomatically": false
+  },
+  "tasks": [
+    {
+      "id": "window-manager",
+      "title": "Build Desktop Window Manager",
+      "status": "complete",
+      "files": [
+        "apps/web-os/components/WindowManager.tsx",
+        "apps/web-os/components/Window.tsx",
+        "apps/web-os/lib/window-registry.ts"
+      ]
+    },
+    {
+      "id": "dock-manager",
+      "title": "Build Dock Manager",
+      "status": "ready",
+      "files": [
+        "apps/web-os/components/DockManager.tsx",
+        "apps/web-os/lib/dock-registry.ts"
+      ]
+    },
+    {
+      "id": "app-registry",
+      "title": "Build App Registry",
+      "status": "queued",
+      "files": [
+        "apps/web-os/lib/app-registry.ts"
+      ]
+    },
+    {
+      "id": "launcher-routing",
+      "title": "Build Launcher Routing",
+      "status": "queued",
+      "files": [
+        "apps/web-os/components/LauncherRouter.tsx"
+      ]
+    },
+    {
+      "id": "settings-surface",
+      "title": "Build Settings Surface",
+      "status": "queued",
+      "files": [
+        "apps/web-os/components/SettingsSurface.tsx"
+      ]
+    }
+  ],
+  "approvals": [
+    {
+      "authorityLevel": 2,
+      "approvedAt": "2026-06-26T15:14:02.554Z",
+      "approvedBy": "human-local-operator",
+      "scope": [
+        "Window Manager",
+        "Dock Manager",
+        "App Registry",
+        "Launcher Routing",
+        "Settings Surface",
+        "Taskbar Foundation"
+      ]
+    }
+  ],
+  "events": [
+    {
+      "type": "mission-json-recovered",
+      "at": "2026-06-26T15:14:02.554Z"
+    },
+    {
+      "type": "mission-approved",
+      "at": "2026-06-26T15:14:02.554Z"
+    }
+  ],
+  "updatedAt": "2026-06-26T15:14:02.555Z"
+}\n
