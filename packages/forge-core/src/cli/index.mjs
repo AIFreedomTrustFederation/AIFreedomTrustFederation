@@ -13,6 +13,7 @@ import { bootstrap } from "../commands/bootstrap.mjs";
 import { build } from "../commands/build.mjs";
 import { verify } from "../commands/verify.mjs";
 
+async function main() {
 const command = process.argv[2] ?? "help";
 
 function help() {
@@ -72,7 +73,7 @@ switch (command) {
     build(process.argv.slice(3));
     break;
   case "verify":
-    verify(process.argv.slice(3));
+    await verify(process.argv.slice(3));
     break;
   case "help":
   case "--help":
@@ -84,3 +85,9 @@ switch (command) {
     help();
     process.exit(1);
 }
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

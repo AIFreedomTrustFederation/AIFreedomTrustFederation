@@ -1,7 +1,36 @@
-import { existsSync } from "node:fs";
+import { existsSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { execSync } from "node:child_process";
 import { section, ok, warn, fail } from "../lib/logger.mjs";
+import { runWithProgress } from "../lib/progress.mjs";
+
+
+function repairNextConfig(webRoot, results) {
+  const jsPath = join(webRoot, "next.config.js");
+  const mjsPath = join(webRoot, "next.config.mjs");
+
+  const content = `/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true
+};
+
+export default nextConfig;
+`;
+
+  writeFileSync(mjsPath, content);
+
+  if (existsSync(jsPath)) {
+    writeFileSync(
+      jsPath,
+      `// This project uses ES modules. Use next.config.mjs instead.
+export { default } from "./next.config.mjs";
+`
+    );
+  }
+
+  ok("repaired Next.js config for ES module project");
+  results.passed += 1;
+}
 
 function checkFile(path, label, results) {
   if (existsSync(path)) {
@@ -15,27 +44,24 @@ function checkFile(path, label, results) {
   return false;
 }
 
-function tryCommand(command, cwd, label, results) {
-  try {
-    execSync(command, {
-      cwd,
-      stdio: "pipe",
-      encoding: "utf8"
-    });
+async function tryCommand(command, args, cwd, label, results) {
+  const result = await runWithProgress(command, args, {
+    cwd,
+    label,
+    heartbeatMs: 5000
+  });
 
-    ok(label);
+  if (result.ok) {
     results.passed += 1;
     return true;
-  } catch (error) {
-    warn(`${label} failed`);
-    if (error.stdout) console.log(error.stdout);
-    if (error.stderr) console.log(error.stderr);
-    results.failed += 1;
-    return false;
   }
+
+  results.failed += 1;
+  return false;
 }
 
-export function verifyWebOs(paths, options = {}) {
+export async function verifyWebOs(paths, options = {}) {
+  const repair = options.repair === true;
   const osRoot = join(paths.aiftRoot, "BookSmith-Federation-OS");
   const webRoot = join(osRoot, "apps/web-os");
 
@@ -74,6 +100,15 @@ export function verifyWebOs(paths, options = {}) {
   section("API Routes");
   checkFile(join(webRoot, "app/api/booksmith/run/route.ts"), "api/booksmith/run/route.ts", results);
 
+  section("Repair");
+
+  if (repair) {
+    repairNextConfig(webRoot, results);
+  } else {
+    warn("Repair not requested. Use --repair to allow Forge to fix known issues.");
+    results.skipped += 1;
+  }
+
   section("Optional Build Checks");
 
   if (options.skipBuild) {
@@ -81,8 +116,8 @@ export function verifyWebOs(paths, options = {}) {
     results.skipped += 2;
   } else {
     if (existsSync(join(webRoot, "node_modules"))) {
-      tryCommand("npm run typecheck", webRoot, "npm run typecheck", results);
-      tryCommand("npm run build", webRoot, "npm run build", results);
+      await tryCommand("npm", ["run", "typecheck"], webRoot, "npm run typecheck", results);
+      await tryCommand("npm", ["run", "build"], webRoot, "npm run build", results);
     } else {
       warn("node_modules missing in apps/web-os. Skipping npm checks.");
       console.log("Run:");

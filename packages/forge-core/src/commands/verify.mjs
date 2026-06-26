@@ -2,20 +2,22 @@ import { getForgePaths } from "../lib/paths.mjs";
 import { verifyWebOs } from "../verifiers/web-os.mjs";
 import { fail } from "../lib/logger.mjs";
 
-export function verify(args = []) {
+export async function verify(args = []) {
   const target = args[0];
   const skipBuild = args.includes("--skip-build");
+  const repair = args.includes("--repair");
   const paths = getForgePaths(import.meta.url);
 
   if (!target) {
     console.log("Usage:");
     console.log("  aift-forge verify web-os");
     console.log("  aift-forge verify web-os --skip-build");
+    console.log("  aift-forge verify web-os --repair");
     process.exit(1);
   }
 
   if (target === "web-os") {
-    verifyWebOs(paths, { skipBuild });
+    await verifyWebOs(paths, { skipBuild, repair });
     return;
   }
 
