@@ -3,6 +3,7 @@ import { join } from "node:path";
 import { saveMission, calculateMissionProgress } from "./state.mjs";
 import { missionTemplate as booksmithDesktopLayer2 } from "./templates/booksmith-desktop-next.mjs";
 import { listEngineers } from "../pipeline/engineers/index.mjs";
+import { discoverRepository } from "../discovery/repository.mjs";
 
 function fileExists(root, file) {
   return existsSync(join(root, file));
@@ -51,9 +52,44 @@ export async function generateNextMission(paths, targetRepository = "BookSmith-F
 
   const incomplete = mission.tasks.filter((task) => task.status !== "complete");
 
-  if (!incomplete.length) {
+  if (incomplete.length) {
+    return saveMission(paths.repoRoot, mission);
+  }
+
+  const discovered = await discoverRepository(paths, targetRepository);
+  const executable = discovered.tasks.filter((task) => task.engineer);
+
+  if (!executable.length) {
     return null;
   }
 
-  return saveMission(paths.repoRoot, mission);
+  return saveMission(paths.repoRoot, {
+    id: `mission-${targetRepository.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-discovered`,
+    title: `Discovered ${targetRepository} Engineering Work`,
+    targetRepository,
+    authorityLevel: 2,
+    state: "needs-review",
+    risk: "low",
+    scope: executable.map((task) => task.title),
+    limits: {
+      mayCreateFiles: true,
+      mayModifyExistingUi: true,
+      mayModifyExistingApi: false,
+      mayDeleteFiles: false,
+      mayTouchOtherRepositories: false,
+      mayInstallDependencies: false,
+      mayCommitAutomatically: false
+    },
+    tasks: executable,
+    progress: 0,
+    approvals: [],
+    events: [
+      {
+        type: "mission-generated-from-discovery",
+        targetRepository,
+        at: new Date().toISOString()
+      }
+    ],
+    updatedAt: new Date().toISOString()
+  });
 }
