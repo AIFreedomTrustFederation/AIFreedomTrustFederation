@@ -3,14 +3,22 @@ import { pipeline } from "./pipeline.mjs";
 import { getForgePaths } from "../lib/paths.mjs";
 import { section, ok, warn } from "../lib/logger.mjs";
 
+function parseMax(args) {
+  const maxIndex = args.indexOf("--max");
+  if (maxIndex >= 0) return Number(args[maxIndex + 1] ?? 1);
+  if (args.includes("--continuous")) return 50;
+  return 1;
+}
+
 export async function autopilot(args = []) {
   const publish = args.includes("--publish");
-  const maxIndex = args.indexOf("--max");
-  const maxRuns = maxIndex >= 0 ? Number(args[maxIndex + 1] ?? 1) : 1;
+  const continuous = args.includes("--continuous");
+  const maxRuns = parseMax(args);
 
   const paths = getForgePaths(import.meta.url);
 
   console.log("🤖 Forge Autopilot");
+  console.log(`Mode: ${continuous ? "continuous" : "single"}`);
   console.log(`Max runs: ${maxRuns}`);
   console.log(`Publish: ${publish ? "requested" : "no"}`);
 
@@ -39,10 +47,23 @@ export async function autopilot(args = []) {
       "run",
       ...(publish ? ["--publish"] : [])
     ]);
+
+    const after = loadMission(paths.repoRoot);
+    const nextTask = getNextMissionTask(after);
+
+    if (!continuous && i + 1 >= maxRuns) break;
+
+    if (!nextTask) {
+      section("Autopilot Complete");
+      ok("Mission has no remaining executable tasks.");
+      return;
+    }
   }
 
   section("Autopilot Complete");
   console.log("Run again when ready:");
   console.log("  aift-forge autopilot --max 1");
-  console.log("  aift-forge autopilot --max 3");
+  console.log("  aift-forge autopilot --continuous");
 }
+
+export default autopilot;

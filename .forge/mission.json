@@ -35,7 +35,8 @@
         "apps/web-os/components/WindowManager.tsx",
         "apps/web-os/components/Window.tsx",
         "apps/web-os/lib/window-registry.ts"
-      ]
+      ],
+      "dependsOn": []
     },
     {
       "id": "dock-manager",
@@ -44,7 +45,11 @@
       "files": [
         "apps/web-os/components/DockManager.tsx",
         "apps/web-os/lib/dock-registry.ts"
-      ]
+      ],
+      "dependsOn": [
+        "window-manager"
+      ],
+      "engineer": "dock-manager"
     },
     {
       "id": "app-registry",
@@ -52,7 +57,11 @@
       "status": "complete",
       "files": [
         "apps/web-os/lib/app-registry.ts"
-      ]
+      ],
+      "dependsOn": [
+        "window-manager"
+      ],
+      "engineer": "app-registry"
     },
     {
       "id": "launcher-routing",
@@ -60,7 +69,12 @@
       "status": "complete",
       "files": [
         "apps/web-os/components/LauncherRouter.tsx"
-      ]
+      ],
+      "dependsOn": [
+        "app-registry",
+        "dock-manager"
+      ],
+      "engineer": "launcher-routing"
     },
     {
       "id": "settings-surface",
@@ -68,7 +82,11 @@
       "status": "complete",
       "files": [
         "apps/web-os/components/SettingsSurface.tsx"
-      ]
+      ],
+      "dependsOn": [
+        "window-manager"
+      ],
+      "engineer": "settings-surface"
     }
   ],
   "approvals": [
@@ -122,6 +140,6 @@
       "at": "2026-06-26T20:44:12.444Z"
     }
   ],
-  "updatedAt": "2026-06-26T20:44:12.444Z",
+  "updatedAt": "2026-06-26T21:04:35.756Z",
   "corruptBackupPath": "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/.forge/mission.json.corrupt-1782504793766"
 }

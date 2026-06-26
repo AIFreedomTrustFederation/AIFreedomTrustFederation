@@ -1,4 +1,5 @@
 import { getForgePaths } from "../lib/paths.mjs";
+import { scanMissionCandidate, createMissionFromScan } from "../mission/generator.mjs";
 import { section, ok, warn } from "../lib/logger.mjs";
 import {
   approveMission,
@@ -55,7 +56,7 @@ function printMission(mission, paths = null) {
   }
 }
 
-export function mission(args = []) {
+export async function mission(args = []) {
   const action = args[0] ?? "show";
   const paths = getForgePaths(import.meta.url);
 
@@ -63,6 +64,38 @@ export function mission(args = []) {
     const current = ensureMission(paths.repoRoot);
     console.log("🛡️ Forge Mission");
     printMission(current, paths);
+    return;
+  }
+
+  if (action === "scan") {
+    const target = args[1] ?? "BookSmith-Federation-OS";
+    const scan = await scanMissionCandidate(paths, target);
+
+    console.log("🔎 Forge Mission Scan");
+    console.log(`Target: ${scan.targetRepository}`);
+    console.log(`Path: ${scan.targetRoot}`);
+
+    section("Tasks");
+    for (const task of scan.tasks) {
+      console.log(`${task.status === "complete" ? "✅" : "⬜"} ${task.title}`);
+      console.log(`   id: ${task.id}`);
+      console.log(`   engineer: ${task.engineer ?? "missing"}`);
+      console.log(`   files: ${task.files.join(", ")}`);
+    }
+
+    section("Engineers");
+    for (const engineer of scan.engineers) {
+      console.log(`✅ ${engineer.taskId}`);
+    }
+
+    return;
+  }
+
+  if (action === "create") {
+    const target = args[1] ?? "BookSmith-Federation-OS";
+    const mission = await createMissionFromScan(paths, target);
+    console.log("🧬 Forge Mission Created");
+    printMission(mission, paths);
     return;
   }
 
