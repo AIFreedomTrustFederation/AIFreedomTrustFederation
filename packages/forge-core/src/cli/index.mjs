@@ -8,6 +8,7 @@ import { status } from "../commands/status.mjs";
 import { plan } from "../commands/plan.mjs";
 import { workspace } from "../commands/workspace.mjs";
 import { commands } from "../commands/commands.mjs";
+import { backlog } from "../commands/backlog.mjs";
 
 const command = process.argv[2] ?? "help";
 
@@ -26,6 +27,7 @@ function help() {
   console.log("  plan       Show Forge development plan");
   console.log("  workspace  Scan or list the local federation workspace");
   console.log("  commands   List registered Forge commands");
+  console.log("  backlog   Show Forge development backlog");
   console.log("  help       Show this help");
 }
 
@@ -53,6 +55,9 @@ switch (command) {
     break;
   case "commands":
     commands(process.argv.slice(3));
+    break;
+  case "backlog":
+    backlog(process.argv.slice(3));
     break;
   case "help":
   case "--help":
