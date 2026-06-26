@@ -2,6 +2,7 @@
 
 import { doctor } from "../commands/doctor.mjs";
 import { manifest } from "../commands/manifest.mjs";
+import { graph } from "../commands/graph.mjs";
 
 const command = process.argv[2] ?? "help";
 
@@ -14,6 +15,7 @@ function help() {
   console.log("Commands:");
   console.log("  doctor     Check federation tools, repos, and AIFT-Forge structure");
   console.log("  manifest   Show AIFT Forge and root federation manifests");
+  console.log("  graph      Show local federation repository topology");
   console.log("  help       Show this help");
 }
 
@@ -23,6 +25,9 @@ switch (command) {
     break;
   case "manifest":
     manifest();
+    break;
+  case "graph":
+    graph();
     break;
   case "help":
   case "--help":
