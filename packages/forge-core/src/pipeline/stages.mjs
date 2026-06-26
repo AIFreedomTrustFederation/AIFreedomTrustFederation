@@ -5,6 +5,7 @@ import { loadMission, saveMission, calculateMissionProgress } from "../mission/s
 import { ok, warn, fail, section } from "../lib/logger.mjs";
 import { getEngineer } from "./engineers/index.mjs";
 import { getBlockedTasks, selectNextTask, normalizeTaskDependencies } from "./planner.mjs";
+import { EngineerExecutionEngine } from "../execution/engine.mjs";
 
 function ensureDir(path) {
   mkdirSync(path, { recursive: true });
@@ -100,23 +101,22 @@ export async function engineerStage(paths, state) {
     return { ...state, blocked: true };
   }
 
-  const engineer = await getEngineer(task.id);
-
-  if (!engineer) {
-    warn(`No engineer registered for task: ${task.id}`);
-    return { ...state, blocked: true };
-  }
-
   const osRoot = join(paths.aiftRoot, mission.targetRepository);
   const webRoot = join(osRoot, "apps/web-os");
 
-  await engineer({
+  const executor = new EngineerExecutionEngine({ paths });
+  const result = await executor.run({
     paths,
     mission,
     task,
     osRoot,
     webRoot
   });
+
+  if (!result.ok) {
+    warn(`Engineer execution failed for task: ${task.id}`);
+    return { ...state, blocked: true };
+  }
 
   return { ...state, engineered: true };
 }
