@@ -42,6 +42,13 @@ export const commandRegistry = [
     status: "active"
   },
   {
+    name: "verify",
+    description: "Verify generated federation targets such as the BookSmith Web OS shell.",
+    category: "verification",
+    phase: "1",
+    status: "active"
+  },
+  {
     name: "build",
     description: "Build federation targets such as the BookSmith Web OS shell.",
     category: "build",

@@ -11,6 +11,7 @@ import { commands } from "../commands/commands.mjs";
 import { backlog } from "../commands/backlog.mjs";
 import { bootstrap } from "../commands/bootstrap.mjs";
 import { build } from "../commands/build.mjs";
+import { verify } from "../commands/verify.mjs";
 
 const command = process.argv[2] ?? "help";
 
@@ -32,6 +33,7 @@ function help() {
   console.log("  backlog   Show Forge development backlog");
   console.log("  bootstrap  Bootstrap federation systems");
   console.log("  build      Build federation targets");
+  console.log("  verify     Verify federation targets");
   console.log("  help       Show this help");
 }
 
@@ -68,6 +70,9 @@ switch (command) {
     break;
   case "build":
     build(process.argv.slice(3));
+    break;
+  case "verify":
+    verify(process.argv.slice(3));
     break;
   case "help":
   case "--help":
