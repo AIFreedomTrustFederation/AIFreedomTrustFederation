@@ -1,7 +1,10 @@
 import { join } from "node:path";
 import { writeFileOnce } from "./shared.mjs";
 
-export function buildLauncherRouting({ webRoot }) {
+export const task = "launcher-routing";
+export const description = "Build the BookSmith Web OS launcher routing surface.";
+
+export function run({ webRoot }) {
   writeFileOnce(
     join(webRoot, "components/LauncherRouter.tsx"),
     `import { appRegistry } from "../lib/app-registry";

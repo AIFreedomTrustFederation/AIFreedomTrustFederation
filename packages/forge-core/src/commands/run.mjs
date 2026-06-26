@@ -32,7 +32,7 @@ function gitBranch(cwd) {
   return runCommand("git branch --show-current", cwd).output || "unknown";
 }
 
-export function run(args = []) {
+export async function run(args = []) {
   const publish = args.includes("--publish");
   const paths = getForgePaths(import.meta.url);
   const mission = loadMission(paths.repoRoot);
@@ -81,7 +81,7 @@ export function run(args = []) {
 
   section("Pipeline");
   const engine = new PipelineEngine({ paths });
-  engine.run({ publish });
+  await engine.run({ publish });
 
   section("Review");
   const afterStatus = gitStatus(paths.repoRoot);

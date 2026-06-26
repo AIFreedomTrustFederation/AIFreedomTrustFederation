@@ -1,7 +1,10 @@
 import { join } from "node:path";
 import { writeFileOnce } from "./shared.mjs";
 
-export function buildAppRegistry({ webRoot }) {
+export const task = "app-registry";
+export const description = "Build the BookSmith Web OS application registry.";
+
+export function run({ webRoot }) {
   writeFileOnce(
     join(webRoot, "lib/app-registry.ts"),
     `export type AppDefinition = {

@@ -71,7 +71,7 @@ export function planStage(paths) {
   return { mission, task: nextTask };
 }
 
-export function engineerStage(paths, state) {
+export async function engineerStage(paths, state) {
   section("Engineer");
 
   const { mission, task } = state;
@@ -93,7 +93,7 @@ export function engineerStage(paths, state) {
     return { ...state, blocked: true };
   }
 
-  const engineer = getEngineer(task.id);
+  const engineer = await getEngineer(task.id);
 
   if (!engineer) {
     warn(`No engineer registered for task: ${task.id}`);
@@ -103,7 +103,7 @@ export function engineerStage(paths, state) {
   const osRoot = join(paths.aiftRoot, mission.targetRepository);
   const webRoot = join(osRoot, "apps/web-os");
 
-  engineer({
+  await engineer({
     paths,
     mission,
     task,

@@ -1,7 +1,10 @@
 import { join } from "node:path";
 import { writeFileOnce } from "./shared.mjs";
 
-export function buildDockManager({ webRoot }) {
+export const task = "dock-manager";
+export const description = "Build the BookSmith Web OS dock registry and dock manager component.";
+
+export function run({ webRoot }) {
   writeFileOnce(
     join(webRoot, "lib/dock-registry.ts"),
     `export type DockItem = {

@@ -1,14 +1,14 @@
 import { getForgePaths } from "../lib/paths.mjs";
 import { PipelineEngine } from "../pipeline/engine.mjs";
 
-export function pipeline(args = []) {
+export async function pipeline(args = []) {
   const action = args[0] ?? "status";
   const publish = args.includes("--publish");
   const paths = getForgePaths(import.meta.url);
   const engine = new PipelineEngine({ paths });
 
   if (action === "run") {
-    engine.run({ publish });
+    await engine.run({ publish });
     return;
   }
 

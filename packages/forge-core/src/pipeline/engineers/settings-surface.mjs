@@ -1,7 +1,10 @@
 import { join } from "node:path";
 import { writeFileOnce } from "./shared.mjs";
 
-export function buildSettingsSurface({ webRoot }) {
+export const task = "settings-surface";
+export const description = "Build the BookSmith Web OS settings surface.";
+
+export function run({ webRoot }) {
   writeFileOnce(
     join(webRoot, "components/SettingsSurface.tsx"),
     `const settings = [

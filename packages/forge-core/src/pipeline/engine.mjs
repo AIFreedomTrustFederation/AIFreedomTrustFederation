@@ -13,7 +13,7 @@ export class PipelineEngine {
     this.paths = context.paths;
   }
 
-  run(options = {}) {
+  async run(options = {}) {
     console.log("🏗️ Forge Engineering Pipeline");
 
     let state = planStage(this.paths);
@@ -24,7 +24,7 @@ export class PipelineEngine {
       return;
     }
 
-    state = engineerStage(this.paths, state);
+    state = await engineerStage(this.paths, state);
     state = verifierStage(this.paths, state);
     state = reviewerStage(this.paths, state);
     state = memoryStage(this.paths, state);
