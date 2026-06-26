@@ -4,6 +4,7 @@ import { getForgePaths } from "../lib/paths.mjs";
 import { writeFileOnce } from "../lib/filesystem.mjs";
 import { toCamelCase, toKebabCase, toPascalCase } from "../lib/text.mjs";
 import { ok, fail, section } from "../lib/logger.mjs";
+import { modelTemplate } from "../templates/model.template.mjs";
 
 
 function serviceTemplate(serviceName, functionName) {
@@ -117,6 +118,24 @@ export function generate(args = []) {
     return;
   }
 
+  if (type === "model") {
+    const modelName = toPascalCase(name);
+    const fileName = toKebabCase(modelName);
+    const modelPath = join(paths.repoRoot, "packages/forge-core/src/models", `${fileName}.mjs`);
+
+    section("Generate Model");
+    console.log(`Model: ${modelName}`);
+    console.log(`File: ${modelPath}`);
+
+    writeFileOnce(modelPath, modelTemplate({ modelName }));
+
+    ok(`Generated model: ${modelName}`);
+    console.log("");
+    console.log("Import with:");
+    console.log(`  import { ${modelName} } from "./models/${fileName}.mjs";`);
+    return;
+  }
+
   if (type === "service") {
     const serviceName = toPascalCase(name.endsWith("Service") ? name : `${name}Service`);
     const fileName = toKebabCase(serviceName);
@@ -141,5 +160,6 @@ export function generate(args = []) {
   console.log("Available generator types:");
   console.log("  command");
   console.log("  service");
+  console.log("  model");
   process.exit(1);
 }
