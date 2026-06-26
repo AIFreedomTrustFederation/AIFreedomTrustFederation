@@ -6,6 +6,7 @@ import { toCamelCase, toKebabCase, toPascalCase } from "../lib/text.mjs";
 import { ok, fail, section } from "../lib/logger.mjs";
 import { modelTemplate } from "../templates/model.template.mjs";
 import { packageJsonTemplate, packageReadmeTemplate, packageIndexTemplate, packageTestTemplate } from "../templates/package-template.mjs";
+import { repositoryReadmeTemplate, repositoryAgentsTemplate, repositoryManifestTemplate, repositoryPackageJsonTemplate, repositoryGitignoreTemplate, repositoryLicenseTemplate } from "../templates/repository-template.mjs";
 
 
 function serviceTemplate(serviceName, functionName) {
@@ -125,6 +126,36 @@ export function generate(args = []) {
     return;
   }
 
+  if (type === "repository" || type === "repo") {
+    const repoName = toKebabCase(name);
+    const displayName = toPascalCase(name);
+    const repoRoot = join(paths.aiftRoot, repoName);
+
+    section("Generate Repository");
+    console.log(`Repository: ${repoName}`);
+    console.log(`Path: ${repoRoot}`);
+
+    writeFileOnce(join(repoRoot, "README.md"), repositoryReadmeTemplate({ displayName, repoName }));
+    writeFileOnce(join(repoRoot, "AGENTS.md"), repositoryAgentsTemplate({ displayName }));
+    writeFileOnce(join(repoRoot, "LICENSE"), repositoryLicenseTemplate());
+    writeFileOnce(join(repoRoot, "package.json"), repositoryPackageJsonTemplate({ repoName }));
+    writeFileOnce(join(repoRoot, "aift-manifest.json"), repositoryManifestTemplate({ repoName, displayName }));
+    writeFileOnce(join(repoRoot, ".gitignore"), repositoryGitignoreTemplate());
+    writeFileOnce(join(repoRoot, "docs/.gitkeep"), "");
+    writeFileOnce(join(repoRoot, "apps/.gitkeep"), "");
+    writeFileOnce(join(repoRoot, "packages/.gitkeep"), "");
+    writeFileOnce(join(repoRoot, "scripts/.gitkeep"), "");
+
+    ok(`Generated repository scaffold: ${repoName}`);
+    console.log("");
+    console.log("Next:");
+    console.log(`  cd ${repoRoot}`);
+    console.log("  git init");
+    console.log("  git add .");
+    console.log(`  git commit -m "Initialize ${displayName}"`);
+    return;
+  }
+
   if (type === "package") {
     const packageName = toKebabCase(name);
     const displayName = toPascalCase(name);
@@ -192,5 +223,6 @@ export function generate(args = []) {
   console.log("  service");
   console.log("  model");
   console.log("  package");
+  console.log("  repository");
   process.exit(1);
 }
