@@ -3,6 +3,8 @@
 import { doctor } from "../commands/doctor.mjs";
 import { manifest } from "../commands/manifest.mjs";
 import { graph } from "../commands/graph.mjs";
+import { generate } from "../commands/generate.mjs";
+import { status } from "../commands/status.mjs";
 
 const command = process.argv[2] ?? "help";
 
@@ -16,6 +18,8 @@ function help() {
   console.log("  doctor     Check federation tools, repos, and AIFT-Forge structure");
   console.log("  manifest   Show AIFT Forge and root federation manifests");
   console.log("  graph      Show local federation repository topology");
+  console.log("  generate   Generate Forge code from templates");
+  console.log("  status     Scaffolded command");
   console.log("  help       Show this help");
 }
 
@@ -28,6 +32,12 @@ switch (command) {
     break;
   case "graph":
     graph();
+    break;
+  case "generate":
+    generate(process.argv.slice(3));
+    break;
+  case "status":
+    status();
     break;
   case "help":
   case "--help":
