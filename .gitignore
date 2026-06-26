@@ -17,3 +17,15 @@ apps/product-web/dist/
 apps/desktop/dist/
 apps/android/android/
 apps/android/dist/
+# Forge runtime artifacts
+.forge/history/
+.forge/runtime/
+.forge/*.corrupt-*
+.forge/*.bak
+.forge/*.tmp
+
+# Temporary Forge teaching and repair scripts
+add-forge-*.sh
+fix-forge-*.sh
+teach-forge-*.sh
+rebuild-forge-*.sh
