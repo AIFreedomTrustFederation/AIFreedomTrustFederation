@@ -5,6 +5,7 @@ import { writeFileOnce } from "../lib/filesystem.mjs";
 import { toCamelCase, toKebabCase, toPascalCase } from "../lib/text.mjs";
 import { ok, fail, section } from "../lib/logger.mjs";
 import { modelTemplate } from "../templates/model.template.mjs";
+import { packageJsonTemplate, packageReadmeTemplate, packageIndexTemplate, packageTestTemplate } from "../templates/package-template.mjs";
 
 
 function serviceTemplate(serviceName, functionName) {
@@ -35,6 +36,12 @@ export function ${functionName}(context = {}) {
   return service.describe();
 }
 `;
+}
+
+
+function toExportName(name) {
+  const camel = toCamelCase(name);
+  return camel.charAt(0).toLowerCase() + camel.slice(1);
 }
 
 function commandTemplate(commandName, functionName) {
@@ -118,6 +125,29 @@ export function generate(args = []) {
     return;
   }
 
+  if (type === "package") {
+    const packageName = toKebabCase(name);
+    const displayName = toPascalCase(name);
+    const exportName = toExportName(name);
+    const packageRoot = join(paths.repoRoot, "packages", packageName);
+
+    section("Generate Package");
+    console.log(`Package: ${packageName}`);
+    console.log(`Path: ${packageRoot}`);
+
+    writeFileOnce(join(packageRoot, "package.json"), packageJsonTemplate({ packageName }));
+    writeFileOnce(join(packageRoot, "README.md"), packageReadmeTemplate({ displayName }));
+    writeFileOnce(join(packageRoot, "src/index.mjs"), packageIndexTemplate({ exportName }));
+    writeFileOnce(join(packageRoot, "tests/index.test.mjs"), packageTestTemplate({ exportName, packageName }));
+
+    ok(`Generated package: ${packageName}`);
+    console.log("");
+    console.log("Test with:");
+    console.log(`  cd packages/${packageName}`);
+    console.log("  npm test");
+    return;
+  }
+
   if (type === "model") {
     const modelName = toPascalCase(name);
     const fileName = toKebabCase(modelName);
@@ -161,5 +191,6 @@ export function generate(args = []) {
   console.log("  command");
   console.log("  service");
   console.log("  model");
+  console.log("  package");
   process.exit(1);
 }
