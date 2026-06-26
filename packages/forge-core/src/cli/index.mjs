@@ -16,6 +16,7 @@ import { dashboard } from "../commands/dashboard.mjs";
 import { remember } from "../commands/remember.mjs";
 import { resume } from "../commands/resume.mjs";
 import { next } from "../commands/next.mjs";
+import { work } from "../commands/work.mjs";
 
 async function main() {
 const command = process.argv[2] ?? "help";
@@ -94,6 +95,9 @@ switch (command) {
     break;
   case "next":
     next(process.argv.slice(3));
+    break;
+  case "work":
+    work(process.argv.slice(3));
     break;
   case "help":
   case "--help":

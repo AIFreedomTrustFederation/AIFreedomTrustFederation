@@ -21,6 +21,13 @@ export const commandRegistry = [
     status: "active"
   },
   {
+    name: "work",
+    description: "Start a guided Forge engineering session.",
+    category: "orchestration",
+    phase: "1",
+    status: "active"
+  },
+  {
     name: "dashboard",
     description: "Show a federation-wide health dashboard.",
     category: "federation",
