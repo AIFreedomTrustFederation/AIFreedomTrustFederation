@@ -1,21 +1,20 @@
 {
   "schema": "aift.forge.mission.v1",
-  "id": "mission-booksmith-federation-os",
-  "title": "Continue BookSmith-Federation-OS Engineering",
+  "id": "booksmith-desktop-layer-2",
+  "title": "Build BookSmith Desktop Layer 2",
   "authorityLevel": 2,
   "state": "approved",
   "targetRepository": "BookSmith-Federation-OS",
   "risk": "low",
-  "progress": 100,
+  "progress": 40,
   "estimatedTasks": 12,
   "estimatedFiles": 18,
   "scope": [
-    "Window Manager",
-    "Dock Manager",
-    "App Registry",
-    "Launcher Routing",
-    "Settings Surface",
-    "Taskbar Foundation"
+    "Notification Center",
+    "File Explorer",
+    "Terminal Surface",
+    "Search Palette",
+    "Status Bar"
   ],
   "limits": {
     "mayCreateFiles": true,
@@ -28,99 +27,105 @@
   },
   "tasks": [
     {
-      "id": "window-manager",
-      "title": "Build Desktop Window Manager",
-      "files": [
-        "apps/web-os/components/WindowManager.tsx",
-        "apps/web-os/components/Window.tsx",
-        "apps/web-os/lib/window-registry.ts"
-      ],
+      "id": "notification-center",
+      "title": "Build Notification Center",
+      "status": "complete",
       "dependsOn": [],
-      "status": "complete",
-      "engineer": "window-manager"
+      "files": [
+        "apps/web-os/components/NotificationCenter.tsx",
+        "apps/web-os/lib/notification-registry.ts"
+      ],
+      "engineer": "notification-center"
     },
     {
-      "id": "dock-manager",
-      "title": "Build Dock Manager",
-      "files": [
-        "apps/web-os/components/DockManager.tsx",
-        "apps/web-os/lib/dock-registry.ts"
-      ],
-      "dependsOn": [
-        "window-manager"
-      ],
+      "id": "file-explorer",
+      "title": "Build File Explorer",
       "status": "complete",
-      "engineer": "dock-manager"
+      "dependsOn": [
+        "notification-center"
+      ],
+      "files": [
+        "apps/web-os/components/FileExplorer.tsx",
+        "apps/web-os/lib/file-explorer-registry.ts"
+      ],
+      "engineer": "file-explorer"
     },
     {
-      "id": "app-registry",
-      "title": "Build App Registry",
-      "files": [
-        "apps/web-os/lib/app-registry.ts"
-      ],
+      "id": "terminal-surface",
+      "title": "Build Terminal Surface",
+      "status": "ready",
       "dependsOn": [
-        "window-manager"
+        "file-explorer"
       ],
-      "status": "complete",
-      "engineer": "app-registry"
+      "files": [
+        "apps/web-os/components/TerminalSurface.tsx",
+        "apps/web-os/lib/terminal-commands.ts"
+      ],
+      "engineer": null
     },
     {
-      "id": "launcher-routing",
-      "title": "Build Launcher Routing",
-      "files": [
-        "apps/web-os/components/LauncherRouter.tsx"
-      ],
+      "id": "search-palette",
+      "title": "Build Search Palette",
+      "status": "queued",
       "dependsOn": [
-        "app-registry",
-        "dock-manager"
+        "terminal-surface"
       ],
-      "status": "complete",
-      "engineer": "launcher-routing"
+      "files": [
+        "apps/web-os/components/SearchPalette.tsx",
+        "apps/web-os/lib/search-index.ts"
+      ],
+      "engineer": null
     },
     {
-      "id": "settings-surface",
-      "title": "Build Settings Surface",
-      "files": [
-        "apps/web-os/components/SettingsSurface.tsx"
-      ],
+      "id": "status-bar",
+      "title": "Build Status Bar",
+      "status": "queued",
       "dependsOn": [
-        "window-manager"
+        "search-palette"
       ],
-      "status": "complete",
-      "engineer": "settings-surface"
+      "files": [
+        "apps/web-os/components/StatusBar.tsx",
+        "apps/web-os/lib/status-registry.ts"
+      ],
+      "engineer": null
     }
   ],
   "approvals": [
     {
       "authorityLevel": 2,
-      "approvedAt": "2026-06-26T21:22:44.038Z",
+      "approvedAt": "2026-06-26T21:35:18.936Z",
       "approvedBy": "human-local-operator",
       "scope": [
-        "Window Manager",
-        "Dock Manager",
-        "App Registry",
-        "Launcher Routing",
-        "Settings Surface",
-        "Taskbar Foundation"
+        "Notification Center",
+        "File Explorer",
+        "Terminal Surface",
+        "Search Palette",
+        "Status Bar"
       ]
     }
   ],
   "events": [
     {
-      "type": "mission-created-from-scan",
-      "targetRepository": "BookSmith-Federation-OS",
-      "at": "2026-06-26T21:22:43.649Z"
+      "type": "mission-generated",
+      "templateId": "booksmith-desktop-layer-2",
+      "at": "2026-06-26T21:35:18.933Z"
     },
     {
       "type": "mission-approved",
-      "at": "2026-06-26T21:22:44.038Z"
+      "at": "2026-06-26T21:35:18.936Z"
     },
     {
       "type": "pipeline-task-complete",
-      "taskId": "window-manager",
-      "title": "Build Desktop Window Manager",
-      "at": "2026-06-26T21:22:44.984Z"
+      "taskId": "notification-center",
+      "title": "Build Notification Center",
+      "at": "2026-06-26T21:35:19.933Z"
+    },
+    {
+      "type": "pipeline-task-complete",
+      "taskId": "file-explorer",
+      "title": "Build File Explorer",
+      "at": "2026-06-26T21:35:19.987Z"
     }
   ],
-  "updatedAt": "2026-06-26T21:22:44.984Z"
+  "updatedAt": "2026-06-26T21:35:19.988Z"
 }

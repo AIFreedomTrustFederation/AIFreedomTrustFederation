@@ -8,6 +8,7 @@ import {
   calculateMissionProgress
 } from "../mission/state.mjs";
 import { createMissionFromScan, scanMissionCandidate } from "../mission/generator.mjs";
+import { generateNextMission } from "../mission/next-mission.mjs";
 import { assign } from "../commands/assign.mjs";
 import { ok, warn, section } from "../lib/logger.mjs";
 
@@ -54,12 +55,18 @@ export class MissionLifecycleEngine {
   async createNextMission(targetRepository = "BookSmith-Federation-OS") {
     section("Create Next Mission");
 
+    const generated = await generateNextMission(this.paths, targetRepository);
+
+    if (generated) {
+      ok(`Generated mission: ${generated.title}`);
+      return generated;
+    }
+
     const scan = await this.scan(targetRepository);
     const incomplete = scan.tasks.filter((task) => task.status !== "complete");
 
     if (!incomplete.length) {
-      warn("Scan found no incomplete known tasks.");
-      console.log("Next capability needed: mission template expansion.");
+      warn("No next mission generated. Repository appears complete for known templates.");
       return null;
     }
 
