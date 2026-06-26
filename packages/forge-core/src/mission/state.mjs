@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { normalizeTaskDependencies, selectNextTask } from "../pipeline/planner.mjs";
 
 export function defaultMission() {
   return {
@@ -45,6 +46,7 @@ export function defaultMission() {
         id: "dock-manager",
         title: "Build Dock Manager",
         status: "ready",
+        dependsOn: ["window-manager"],
         files: [
           "apps/web-os/components/DockManager.tsx",
           "apps/web-os/lib/dock-registry.ts"
@@ -54,6 +56,7 @@ export function defaultMission() {
         id: "app-registry",
         title: "Build App Registry",
         status: "queued",
+        dependsOn: ["window-manager"],
         files: [
           "apps/web-os/lib/app-registry.ts"
         ]
@@ -62,6 +65,7 @@ export function defaultMission() {
         id: "launcher-routing",
         title: "Build Launcher Routing",
         status: "queued",
+        dependsOn: ["app-registry", "dock-manager"],
         files: [
           "apps/web-os/components/LauncherRouter.tsx"
         ]
@@ -70,6 +74,7 @@ export function defaultMission() {
         id: "settings-surface",
         title: "Build Settings Surface",
         status: "queued",
+        dependsOn: ["window-manager"],
         files: [
           "apps/web-os/components/SettingsSurface.tsx"
         ]
@@ -88,7 +93,7 @@ export function missionPath(repoRoot) {
 function mergeMission(raw) {
   const base = defaultMission();
 
-  return {
+  return normalizeTaskDependencies({
     ...base,
     ...raw,
     limits: {
@@ -99,7 +104,7 @@ function mergeMission(raw) {
     scope: Array.isArray(raw.scope) && raw.scope.length ? raw.scope : base.scope,
     approvals: Array.isArray(raw.approvals) ? raw.approvals : [],
     events: Array.isArray(raw.events) ? raw.events : []
-  };
+  });
 }
 
 export function loadMission(repoRoot) {
@@ -186,9 +191,7 @@ export function setMissionState(repoRoot, state) {
 }
 
 export function getNextMissionTask(mission) {
-  return mission.tasks.find((task) => task.status === "ready") ??
-    mission.tasks.find((task) => task.status === "queued") ??
-    null;
+  return selectNextTask(normalizeTaskDependencies(mission));
 }
 
 export function calculateMissionProgress(mission) {

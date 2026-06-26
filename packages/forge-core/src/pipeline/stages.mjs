@@ -4,6 +4,7 @@ import { execSync } from "node:child_process";
 import { loadMission, saveMission, calculateMissionProgress } from "../mission/state.mjs";
 import { ok, warn, fail, section } from "../lib/logger.mjs";
 import { getEngineer } from "./engineers/index.mjs";
+import { getBlockedTasks, selectNextTask, normalizeTaskDependencies } from "./planner.mjs";
 
 function ensureDir(path) {
   mkdirSync(path, { recursive: true });
@@ -43,14 +44,20 @@ function appendHistory(repoRoot, event) {
 export function planStage(paths) {
   section("Planner");
 
-  const mission = loadMission(paths.repoRoot);
-  const nextTask =
-    mission.tasks.find((task) => task.status === "ready") ??
-    mission.tasks.find((task) => task.status === "queued") ??
-    null;
+  const mission = normalizeTaskDependencies(loadMission(paths.repoRoot));
+  const nextTask = selectNextTask(mission);
 
   if (!nextTask) {
-    ok("No remaining task.");
+    const blocked = getBlockedTasks(mission);
+
+    if (blocked.length) {
+      section("Blocked Tasks");
+      for (const task of blocked) {
+        console.log(`${task.title} blocked by: ${(task.dependsOn ?? []).join(", ")}`);
+      }
+    }
+
+    ok("No executable task is ready.");
     return { mission, task: null };
   }
 
