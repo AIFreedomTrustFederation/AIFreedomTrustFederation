@@ -12,6 +12,7 @@ import { backlog } from "../commands/backlog.mjs";
 import { bootstrap } from "../commands/bootstrap.mjs";
 import { build } from "../commands/build.mjs";
 import { verify } from "../commands/verify.mjs";
+import { dashboard } from "../commands/dashboard.mjs";
 
 async function main() {
 const command = process.argv[2] ?? "help";
@@ -35,6 +36,7 @@ function help() {
   console.log("  bootstrap  Bootstrap federation systems");
   console.log("  build      Build federation targets");
   console.log("  verify     Verify federation targets");
+  console.log("  dashboard  Show federation health dashboard");
   console.log("  help       Show this help");
 }
 
@@ -74,6 +76,9 @@ switch (command) {
     break;
   case "verify":
     await verify(process.argv.slice(3));
+    break;
+  case "dashboard":
+    dashboard();
     break;
   case "help":
   case "--help":

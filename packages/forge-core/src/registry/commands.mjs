@@ -1,5 +1,12 @@
 export const commandRegistry = [
   {
+    name: "dashboard",
+    description: "Show a federation-wide health dashboard.",
+    category: "federation",
+    phase: "1",
+    status: "active"
+  },
+  {
     name: "doctor",
     description: "Check tools, paths, repositories, manifests, and AIFT-Forge structure.",
     category: "health",
