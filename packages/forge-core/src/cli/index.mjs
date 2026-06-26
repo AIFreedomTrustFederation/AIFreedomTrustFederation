@@ -13,6 +13,9 @@ import { bootstrap } from "../commands/bootstrap.mjs";
 import { build } from "../commands/build.mjs";
 import { verify } from "../commands/verify.mjs";
 import { dashboard } from "../commands/dashboard.mjs";
+import { remember } from "../commands/remember.mjs";
+import { resume } from "../commands/resume.mjs";
+import { next } from "../commands/next.mjs";
 
 async function main() {
 const command = process.argv[2] ?? "help";
@@ -37,6 +40,9 @@ function help() {
   console.log("  build      Build federation targets");
   console.log("  verify     Verify federation targets");
   console.log("  dashboard  Show federation health dashboard");
+  console.log("  remember   Show Forge memory state");
+  console.log("  resume     Resume from last known Forge task");
+  console.log("  next       Show or approve next Forge task");
   console.log("  help       Show this help");
 }
 
@@ -79,6 +85,15 @@ switch (command) {
     break;
   case "dashboard":
     dashboard();
+    break;
+  case "remember":
+    remember();
+    break;
+  case "resume":
+    resume();
+    break;
+  case "next":
+    next(process.argv.slice(3));
     break;
   case "help":
   case "--help":

@@ -1,5 +1,26 @@
 export const commandRegistry = [
   {
+    name: "remember",
+    description: "Show Forge memory state and current mission.",
+    category: "memory",
+    phase: "1",
+    status: "active"
+  },
+  {
+    name: "resume",
+    description: "Resume from the last known Forge task.",
+    category: "memory",
+    phase: "1",
+    status: "active"
+  },
+  {
+    name: "next",
+    description: "Show or approve the next Forge task.",
+    category: "planning",
+    phase: "1",
+    status: "active"
+  },
+  {
     name: "dashboard",
     description: "Show a federation-wide health dashboard.",
     category: "federation",
