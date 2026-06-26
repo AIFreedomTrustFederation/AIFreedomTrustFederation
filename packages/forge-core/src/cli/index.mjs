@@ -9,6 +9,7 @@ import { plan } from "../commands/plan.mjs";
 import { workspace } from "../commands/workspace.mjs";
 import { commands } from "../commands/commands.mjs";
 import { backlog } from "../commands/backlog.mjs";
+import { bootstrap } from "../commands/bootstrap.mjs";
 
 const command = process.argv[2] ?? "help";
 
@@ -28,6 +29,7 @@ function help() {
   console.log("  workspace  Scan or list the local federation workspace");
   console.log("  commands   List registered Forge commands");
   console.log("  backlog   Show Forge development backlog");
+  console.log("  bootstrap  Bootstrap federation systems");
   console.log("  help       Show this help");
 }
 
@@ -58,6 +60,9 @@ switch (command) {
     break;
   case "backlog":
     backlog(process.argv.slice(3));
+    break;
+  case "bootstrap":
+    bootstrap(process.argv.slice(3));
     break;
   case "help":
   case "--help":
