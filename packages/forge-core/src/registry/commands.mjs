@@ -42,6 +42,13 @@ export const commandRegistry = [
     status: "active"
   },
   {
+    name: "build",
+    description: "Build federation targets such as the BookSmith Web OS shell.",
+    category: "build",
+    phase: "1",
+    status: "active"
+  },
+  {
     name: "commands",
     description: "List registered Forge commands and metadata.",
     category: "registry",
