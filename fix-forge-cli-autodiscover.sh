@@ -1,3 +1,11 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -e
+
+echo "🧭 Rebuilding Forge CLI with automatic command discovery"
+
+mkdir -p packages/forge-core/src/cli
+
+cat > packages/forge-core/src/cli/index.mjs <<'JS'
 #!/usr/bin/env node
 
 import { existsSync, readdirSync } from "node:fs";
@@ -68,3 +76,21 @@ main().catch((error) => {
   console.error(error);
   process.exit(1);
 });
+JS
+
+chmod +x packages/forge-core/src/cli/index.mjs
+
+mkdir -p "$HOME/.local/bin"
+
+cat > "$HOME/.local/bin/aift-forge" <<'WRAP'
+#!/data/data/com.termux/files/usr/bin/bash
+exec "$HOME/Projects/AIFT/AIFT-Forge/packages/forge-core/src/cli/index.mjs" "$@"
+WRAP
+
+chmod +x "$HOME/.local/bin/aift-forge"
+
+grep -q 'HOME/.local/bin' ~/.bashrc || echo 'export PATH="$HOME/.local/bin:$PATH"' >> ~/.bashrc
+export PATH="$HOME/.local/bin:$PATH"
+
+echo "✅ CLI repaired."
+aift-forge help
