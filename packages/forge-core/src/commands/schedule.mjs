@@ -8,17 +8,15 @@ function parseMax(args) {
   return 1;
 }
 
-export async function autopilot(args = []) {
+export async function schedule(args = []) {
   const paths = getForgePaths(import.meta.url);
   const scheduler = new MissionScheduler({ paths });
 
-  console.log("🤖 Forge Autopilot");
-
   await scheduler.run({
     maxRuns: parseMax(args),
-    lifecycle: args.includes("--continuous") || args.includes("--lifecycle"),
+    lifecycle: args.includes("--lifecycle") || args.includes("--continuous"),
     publish: args.includes("--publish")
   });
 }
 
-export default autopilot;
+export default schedule;
