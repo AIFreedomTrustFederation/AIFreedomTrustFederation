@@ -1,6 +1,7 @@
 import { loadMission, approveMission, getNextMissionTask, calculateMissionProgress } from "../mission/state.mjs";
 import { pipeline } from "./pipeline.mjs";
 import { getForgePaths } from "../lib/paths.mjs";
+import { MissionLifecycleEngine } from "../lifecycle/engine.mjs";
 import { section, ok, warn } from "../lib/logger.mjs";
 
 function parseMax(args) {
@@ -13,18 +14,30 @@ function parseMax(args) {
 export async function autopilot(args = []) {
   const publish = args.includes("--publish");
   const continuous = args.includes("--continuous");
+  const lifecycle = args.includes("--lifecycle") || continuous;
   const maxRuns = parseMax(args);
 
   const paths = getForgePaths(import.meta.url);
+  const lifecycleEngine = new MissionLifecycleEngine({ paths });
 
   console.log("🤖 Forge Autopilot");
   console.log(`Mode: ${continuous ? "continuous" : "single"}`);
+  console.log(`Lifecycle: ${lifecycle ? "enabled" : "disabled"}`);
   console.log(`Max runs: ${maxRuns}`);
   console.log(`Publish: ${publish ? "requested" : "no"}`);
 
   for (let i = 0; i < maxRuns; i += 1) {
-    const mission = loadMission(paths.repoRoot);
-    const task = getNextMissionTask(mission);
+    let mission = loadMission(paths.repoRoot);
+    let task = getNextMissionTask(mission);
+
+    if (!task && lifecycle) {
+      await lifecycleEngine.ensureActiveMission(mission.targetRepository ?? "BookSmith-Federation-OS", {
+        approve: true
+      });
+
+      mission = loadMission(paths.repoRoot);
+      task = getNextMissionTask(mission);
+    }
 
     section(`Autopilot Pass ${i + 1}`);
 
@@ -53,7 +66,13 @@ export async function autopilot(args = []) {
 
     if (!continuous && i + 1 >= maxRuns) break;
 
-    if (!nextTask) {
+    if (!nextTask && lifecycle) {
+      await lifecycleEngine.ensureActiveMission(after.targetRepository ?? "BookSmith-Federation-OS", {
+        approve: true
+      });
+    }
+
+    if (!continuous && !nextTask) {
       section("Autopilot Complete");
       ok("Mission has no remaining executable tasks.");
       return;

@@ -1,7 +1,7 @@
 {
   "schema": "aift.forge.mission.v1",
-  "id": "build-booksmith-desktop",
-  "title": "Build BookSmith Desktop Environment",
+  "id": "mission-booksmith-federation-os",
+  "title": "Continue BookSmith-Federation-OS Engineering",
   "authorityLevel": 2,
   "state": "approved",
   "targetRepository": "BookSmith-Federation-OS",
@@ -30,18 +30,18 @@
     {
       "id": "window-manager",
       "title": "Build Desktop Window Manager",
-      "status": "complete",
       "files": [
         "apps/web-os/components/WindowManager.tsx",
         "apps/web-os/components/Window.tsx",
         "apps/web-os/lib/window-registry.ts"
       ],
-      "dependsOn": []
+      "dependsOn": [],
+      "status": "complete",
+      "engineer": "window-manager"
     },
     {
       "id": "dock-manager",
       "title": "Build Dock Manager",
-      "status": "complete",
       "files": [
         "apps/web-os/components/DockManager.tsx",
         "apps/web-os/lib/dock-registry.ts"
@@ -49,24 +49,24 @@
       "dependsOn": [
         "window-manager"
       ],
+      "status": "complete",
       "engineer": "dock-manager"
     },
     {
       "id": "app-registry",
       "title": "Build App Registry",
-      "status": "complete",
       "files": [
         "apps/web-os/lib/app-registry.ts"
       ],
       "dependsOn": [
         "window-manager"
       ],
+      "status": "complete",
       "engineer": "app-registry"
     },
     {
       "id": "launcher-routing",
       "title": "Build Launcher Routing",
-      "status": "complete",
       "files": [
         "apps/web-os/components/LauncherRouter.tsx"
       ],
@@ -74,25 +74,26 @@
         "app-registry",
         "dock-manager"
       ],
+      "status": "complete",
       "engineer": "launcher-routing"
     },
     {
       "id": "settings-surface",
       "title": "Build Settings Surface",
-      "status": "complete",
       "files": [
         "apps/web-os/components/SettingsSurface.tsx"
       ],
       "dependsOn": [
         "window-manager"
       ],
+      "status": "complete",
       "engineer": "settings-surface"
     }
   ],
   "approvals": [
     {
       "authorityLevel": 2,
-      "approvedAt": "2026-06-26T20:13:13.774Z",
+      "approvedAt": "2026-06-26T21:22:44.038Z",
       "approvedBy": "human-local-operator",
       "scope": [
         "Window Manager",
@@ -106,40 +107,20 @@
   ],
   "events": [
     {
-      "type": "mission-json-recovered",
-      "backupPath": "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/.forge/mission.json.corrupt-1782504793766",
-      "error": "Unexpected non-whitespace character after JSON at position 2360 (line 100 column 2)",
-      "at": "2026-06-26T20:13:13.774Z"
+      "type": "mission-created-from-scan",
+      "targetRepository": "BookSmith-Federation-OS",
+      "at": "2026-06-26T21:22:43.649Z"
     },
     {
       "type": "mission-approved",
-      "at": "2026-06-26T20:13:13.774Z"
+      "at": "2026-06-26T21:22:44.038Z"
     },
     {
       "type": "pipeline-task-complete",
-      "taskId": "dock-manager",
-      "title": "Build Dock Manager",
-      "at": "2026-06-26T20:13:18.355Z"
-    },
-    {
-      "type": "pipeline-task-complete",
-      "taskId": "app-registry",
-      "title": "Build App Registry",
-      "at": "2026-06-26T20:33:06.946Z"
-    },
-    {
-      "type": "pipeline-task-complete",
-      "taskId": "launcher-routing",
-      "title": "Build Launcher Routing",
-      "at": "2026-06-26T20:36:51.941Z"
-    },
-    {
-      "type": "pipeline-task-complete",
-      "taskId": "settings-surface",
-      "title": "Build Settings Surface",
-      "at": "2026-06-26T20:44:12.444Z"
+      "taskId": "window-manager",
+      "title": "Build Desktop Window Manager",
+      "at": "2026-06-26T21:22:44.984Z"
     }
   ],
-  "updatedAt": "2026-06-26T21:04:35.756Z",
-  "corruptBackupPath": "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/.forge/mission.json.corrupt-1782504793766"
+  "updatedAt": "2026-06-26T21:22:44.984Z"
 }

@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { execSync } from "node:child_process";
-import { getEngineer } from "../pipeline/engineers/index.mjs";
+import { getEngineer, listEngineers } from "../pipeline/engineers/index.mjs";
 import { ok, warn, fail, section } from "../lib/logger.mjs";
 
 function ensureDir(path) {
@@ -47,7 +47,13 @@ export class EngineerExecutionEngine {
     const engineer = await getEngineer(task.id);
 
     if (!engineer) {
+      const available = await listEngineers();
       fail(`No engineer registered for task: ${task.id}`);
+      console.log("");
+      console.log("Registered engineers:");
+      for (const item of available) {
+        console.log(`  - ${item.taskId}`);
+      }
       return { ok: false, reason: "missing-engineer" };
     }
 
