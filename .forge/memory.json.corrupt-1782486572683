@@ -7,17 +7,21 @@
     "Progress Runner",
     "Web OS Verify",
     "Web OS Repair",
-    "Web OS Build Shell",
-    "Desktop Window Manager"
+    "Web OS Build Shell"
   ],
   "currentTask": {
-    "id": "web-os-dock-manager",
-    "title": "Build Dock Manager",
+    "id": "web-os-window-manager",
+    "title": "Build Desktop Window Manager",
     "status": "ready",
     "targetRepo": "BookSmith-Federation-OS",
-    "reason": "The Window Manager exists. The next OS-level capability is improving the dock into a managed app launch surface."
+    "reason": "The Web OS shell exists and verifies. The next OS-level capability is managing windows and app surfaces."
   },
   "nextTasks": [
+    {
+      "id": "web-os-dock-manager",
+      "title": "Build Dock Manager",
+      "status": "queued"
+    },
     {
       "id": "web-os-app-registry",
       "title": "Build App Registry",
@@ -35,7 +39,7 @@
     }
   ],
   "approvals": [],
-  "updatedAt": "2026-06-26T15:09:32.699Z",
+  "updatedAt": "2026-06-26T15:02:52.208Z",
   "recoveredFromCorruption": true,
-  "corruptBackupPath": "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/.forge/memory.json.corrupt-1782486572698"
+  "corruptBackupPath": "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/.forge/memory.json.corrupt-1782486172205"
 }\n

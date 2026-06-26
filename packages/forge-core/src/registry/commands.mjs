@@ -21,6 +21,13 @@ export const commandRegistry = [
     status: "active"
   },
   {
+    name: "cycle",
+    description: "Run Forge observe-think-build-verify-learn workflow cycle.",
+    category: "orchestration",
+    phase: "1",
+    status: "active"
+  },
+  {
     name: "work",
     description: "Start a guided Forge engineering session.",
     category: "orchestration",
