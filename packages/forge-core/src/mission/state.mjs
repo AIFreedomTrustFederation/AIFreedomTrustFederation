@@ -85,6 +85,23 @@ export function missionPath(repoRoot) {
   return join(repoRoot, ".forge", "mission.json");
 }
 
+function mergeMission(raw) {
+  const base = defaultMission();
+
+  return {
+    ...base,
+    ...raw,
+    limits: {
+      ...base.limits,
+      ...(raw.limits ?? {})
+    },
+    tasks: Array.isArray(raw.tasks) && raw.tasks.length ? raw.tasks : base.tasks,
+    scope: Array.isArray(raw.scope) && raw.scope.length ? raw.scope : base.scope,
+    approvals: Array.isArray(raw.approvals) ? raw.approvals : [],
+    events: Array.isArray(raw.events) ? raw.events : []
+  };
+}
+
 export function loadMission(repoRoot) {
   const path = missionPath(repoRoot);
 
@@ -93,14 +110,27 @@ export function loadMission(repoRoot) {
   }
 
   try {
-    return JSON.parse(readFileSync(path, "utf8"));
-  } catch {
+    const raw = JSON.parse(readFileSync(path, "utf8"));
+    return mergeMission(raw);
+  } catch (error) {
+    const backupPath = `${path}.corrupt-${Date.now()}`;
+
+    try {
+      writeFileSync(backupPath, readFileSync(path, "utf8"));
+    } catch {
+      // Best-effort backup only.
+    }
+
     const recovered = defaultMission();
     recovered.state = "needs-review";
+    recovered.corruptBackupPath = backupPath;
     recovered.events.push({
       type: "mission-json-recovered",
+      backupPath,
+      error: error.message,
       at: new Date().toISOString()
     });
+
     return recovered;
   }
 }
@@ -109,17 +139,19 @@ export function saveMission(repoRoot, mission) {
   const path = missionPath(repoRoot);
   mkdirSync(dirname(path), { recursive: true });
 
-  const next = {
+  const next = mergeMission({
     ...mission,
+    progress: calculateMissionProgress(mission),
     updatedAt: new Date().toISOString()
-  };
+  });
 
-  writeFileSync(path, JSON.stringify(next, null, 2) + "\\n");
+  writeFileSync(path, JSON.stringify(next, null, 2) + "\n");
   return next;
 }
 
 export function ensureMission(repoRoot) {
-  return saveMission(repoRoot, loadMission(repoRoot));
+  const mission = loadMission(repoRoot);
+  return saveMission(repoRoot, mission);
 }
 
 export function approveMission(repoRoot) {
@@ -160,7 +192,7 @@ export function getNextMissionTask(mission) {
 }
 
 export function calculateMissionProgress(mission) {
-  if (!mission.tasks.length) return 0;
+  if (!mission.tasks?.length) return 0;
 
   const complete = mission.tasks.filter((task) => task.status === "complete").length;
   return Math.round((complete / mission.tasks.length) * 100);

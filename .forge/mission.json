@@ -6,7 +6,7 @@
   "state": "approved",
   "targetRepository": "BookSmith-Federation-OS",
   "risk": "low",
-  "progress": 0,
+  "progress": 40,
   "estimatedTasks": 12,
   "estimatedFiles": 18,
   "scope": [
@@ -40,7 +40,7 @@
     {
       "id": "dock-manager",
       "title": "Build Dock Manager",
-      "status": "ready",
+      "status": "complete",
       "files": [
         "apps/web-os/components/DockManager.tsx",
         "apps/web-os/lib/dock-registry.ts"
@@ -49,7 +49,7 @@
     {
       "id": "app-registry",
       "title": "Build App Registry",
-      "status": "queued",
+      "status": "ready",
       "files": [
         "apps/web-os/lib/app-registry.ts"
       ]
@@ -74,7 +74,7 @@
   "approvals": [
     {
       "authorityLevel": 2,
-      "approvedAt": "2026-06-26T15:14:02.554Z",
+      "approvedAt": "2026-06-26T20:13:13.774Z",
       "approvedBy": "human-local-operator",
       "scope": [
         "Window Manager",
@@ -89,12 +89,21 @@
   "events": [
     {
       "type": "mission-json-recovered",
-      "at": "2026-06-26T15:14:02.554Z"
+      "backupPath": "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/.forge/mission.json.corrupt-1782504793766",
+      "error": "Unexpected non-whitespace character after JSON at position 2360 (line 100 column 2)",
+      "at": "2026-06-26T20:13:13.774Z"
     },
     {
       "type": "mission-approved",
-      "at": "2026-06-26T15:14:02.554Z"
+      "at": "2026-06-26T20:13:13.774Z"
+    },
+    {
+      "type": "pipeline-task-complete",
+      "taskId": "dock-manager",
+      "title": "Build Dock Manager",
+      "at": "2026-06-26T20:13:18.355Z"
     }
   ],
-  "updatedAt": "2026-06-26T15:14:02.555Z"
-}\n
+  "updatedAt": "2026-06-26T20:13:18.355Z",
+  "corruptBackupPath": "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/.forge/mission.json.corrupt-1782504793766"
+}

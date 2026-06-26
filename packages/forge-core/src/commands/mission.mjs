@@ -5,10 +5,16 @@ import {
   calculateMissionProgress,
   ensureMission,
   getNextMissionTask,
-  setMissionState
+  setMissionState,
+  missionPath
 } from "../mission/state.mjs";
 
-function printMission(mission) {
+function printMission(mission, paths = null) {
+  if (paths) {
+    section("Mission File");
+    console.log(missionPath(paths.repoRoot));
+  }
+
   section("Mission");
   console.log(mission.title);
   console.log(`ID: ${mission.id}`);
@@ -56,35 +62,35 @@ export function mission(args = []) {
   if (action === "show" || action === "status") {
     const current = ensureMission(paths.repoRoot);
     console.log("🛡️ Forge Mission");
-    printMission(current);
+    printMission(current, paths);
     return;
   }
 
   if (action === "approve") {
     const approved = approveMission(paths.repoRoot);
     console.log("✅ Forge Mission Approved");
-    printMission(approved);
+    printMission(approved, paths);
     return;
   }
 
   if (action === "pause") {
     const paused = setMissionState(paths.repoRoot, "paused");
     console.log("⏸️ Forge Mission Paused");
-    printMission(paused);
+    printMission(paused, paths);
     return;
   }
 
   if (action === "resume") {
     const resumed = setMissionState(paths.repoRoot, "approved");
     console.log("▶️ Forge Mission Resumed");
-    printMission(resumed);
+    printMission(resumed, paths);
     return;
   }
 
   if (action === "cancel") {
     const cancelled = setMissionState(paths.repoRoot, "cancelled");
     console.log("🛑 Forge Mission Cancelled");
-    printMission(cancelled);
+    printMission(cancelled, paths);
     return;
   }
 
