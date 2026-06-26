@@ -3,6 +3,7 @@ import { dirname, join } from "node:path";
 import { execSync } from "node:child_process";
 import { loadMission, saveMission, calculateMissionProgress } from "../mission/state.mjs";
 import { ok, warn, fail, section } from "../lib/logger.mjs";
+import { getEngineer } from "./engineers/index.mjs";
 
 function ensureDir(path) {
   mkdirSync(path, { recursive: true });
@@ -92,50 +93,23 @@ export function engineerStage(paths, state) {
     return { ...state, blocked: true };
   }
 
+  const engineer = getEngineer(task.id);
+
+  if (!engineer) {
+    warn(`No engineer registered for task: ${task.id}`);
+    return { ...state, blocked: true };
+  }
+
   const osRoot = join(paths.aiftRoot, mission.targetRepository);
   const webRoot = join(osRoot, "apps/web-os");
 
-  if (task.id === "dock-manager") {
-    writeFileOnce(
-      join(webRoot, "lib/dock-registry.ts"),
-      `export type DockItem = {
-  id: string;
-  label: string;
-  icon: string;
-  targetWindow: string;
-  status: "active" | "planned";
-};
-
-export const dockRegistry: DockItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: "🏠", targetWindow: "dashboard", status: "active" },
-  { id: "booksmith", label: "BookSmith", icon: "📚", targetWindow: "booksmith", status: "planned" },
-  { id: "ai-studio", label: "AI", icon: "🤖", targetWindow: "ai-studio", status: "planned" },
-  { id: "federation", label: "Federation", icon: "🌐", targetWindow: "federation-hub", status: "planned" }
-];
-`
-    );
-
-    writeFileOnce(
-      join(webRoot, "components/DockManager.tsx"),
-      `import { dockRegistry } from "../lib/dock-registry";
-
-export function DockManager() {
-  return (
-    <nav className="panel dock" aria-label="BookSmith Federation OS dock manager">
-      {dockRegistry.map((item) => (
-        <button key={item.id} title={item.targetWindow}>
-          <span aria-hidden="true">{item.icon}</span> {item.label}
-        </button>
-      ))}
-    </nav>
-  );
-}
-`
-    );
-  } else {
-    warn(`No engineer handler yet for task: ${task.id}`);
-    return { ...state, blocked: true };
-  }
+  engineer({
+    paths,
+    mission,
+    task,
+    osRoot,
+    webRoot
+  });
 
   return { ...state, engineered: true };
 }
