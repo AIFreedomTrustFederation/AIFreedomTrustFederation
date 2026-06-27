@@ -1,0 +1,13 @@
+{
+  "schema": "aift.forge.model-route.v1",
+  "id": "embeddings",
+  "capability": "embeddings",
+  "label": "Embeddings",
+  "enabled": true,
+  "strategy": "priority",
+  "preferredModels": [],
+  "fallbackModels": [],
+  "requiredTags": [],
+  "createdAt": "2026-06-27T06:50:17.087Z",
+  "updatedAt": "2026-06-27T06:50:17.087Z"
+}
