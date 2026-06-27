@@ -1,0 +1,14 @@
+{
+  "schema": "aift.forge.improvement-proposal.v1",
+  "id": "test-proposal",
+  "title": "Test Proposal",
+  "category": "documentation",
+  "priority": "low",
+  "risk": "low",
+  "summary": "Test summary",
+  "evidence": [],
+  "recommendedAction": "Write an improvement plan.",
+  "status": "open",
+  "createdAt": "2026-06-27T07:14:02.918Z",
+  "updatedAt": "2026-06-27T07:14:02.931Z"
+}
