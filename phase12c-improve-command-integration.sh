@@ -1,3 +1,15 @@
+#!/data/data/com.termux/files/usr/bin/bash
+set -euo pipefail
+
+echo "🔗 AIFT-Forge Phase 12C: Improve Command Integration"
+
+mkdir -p packages/forge-core/src/improve
+mkdir -p packages/forge-core/src/commands
+mkdir -p docs
+mkdir -p scripts
+mkdir -p .forge/improvement/history
+
+cat > packages/forge-core/src/commands/improve.mjs <<'JS'
 import { getForgePaths } from "../lib/paths.mjs";
 import {
   listProposals,
@@ -346,3 +358,111 @@ export default async function improve(args = []) {
   console.log("Compatibility:");
   console.log("  aift-forge improve-patch ... still works if routed separately");
 }
+JS
+
+cat > scripts/aift-improve-integrated-smoke.mjs <<'JS'
+import { strict as assert } from "node:assert";
+import { rmSync } from "node:fs";
+import { analyzeScan } from "../packages/forge-core/src/improve/analyzer.mjs";
+import { scanRepositoryFiles } from "../packages/forge-core/src/improve/scanner.mjs";
+import {
+  listApprovals,
+  listPatches,
+  generatePatchFromProposal,
+  applyPatch,
+  decideApproval
+} from "../packages/forge-core/src/improve/patches.mjs";
+import { listProposals } from "../packages/forge-core/src/improve/store.mjs";
+
+const paths = { repoRoot: process.cwd() };
+
+rmSync(".forge/improvement/integration-test", { recursive: true, force: true });
+
+const scan = scanRepositoryFiles(paths, { limit: 2000 });
+assert.ok(scan.summary.totalFiles > 0);
+
+const analysis = analyzeScan(paths, scan);
+assert.ok(analysis.report.id);
+
+const proposal = listProposals(paths)[0];
+assert.ok(proposal?.id);
+
+const patch = generatePatchFromProposal(paths, proposal.id);
+assert.ok(patch.id);
+
+const firstApply = applyPatch(paths, patch.id);
+assert.equal(firstApply.ok, false);
+assert.equal(firstApply.status, "approval-required");
+assert.ok(firstApply.approvalId);
+
+const approval = decideApproval(paths, firstApply.approvalId, "approved", "Integrated smoke approval");
+assert.equal(approval.decision, "approved");
+
+const secondApply = applyPatch(paths, patch.id, { approvalId: approval.id });
+assert.equal(secondApply.ok, true);
+
+assert.ok(listPatches(paths).length >= 1);
+assert.ok(listApprovals(paths).length >= 1);
+
+console.log("✅ Integrated improve command smoke test passed.");
+JS
+
+cat > docs/IMPROVE_COMMAND_PHASE_12C.md <<'MD'
+# AIFT-Forge Phase 12C: Improve Command Integration
+
+Phase 12C unifies Phase 12A and Phase 12B behind one `improve` command surface.
+
+## Unified Command
+
+Analysis:
+
+    aift-forge improve status
+    aift-forge improve scan
+    aift-forge improve analyze
+    aift-forge improve scans
+    aift-forge improve reports
+    aift-forge improve proposals
+    aift-forge improve proposal-show proposal-id
+
+Patches:
+
+    aift-forge improve patch-generate proposal-id
+    aift-forge improve patches
+    aift-forge improve patch-show patch-id
+    aift-forge improve patch-validate patch-id
+    aift-forge improve patch-apply patch-id --approval approval-id
+    aift-forge improve approvals
+    aift-forge improve approve approval-id
+    aift-forge improve reject approval-id
+
+Doctor:
+
+    aift-forge improve doctor
+
+## Compatibility
+
+The separate `improve-patch` command may remain available, but `improve` is now the preferred command surface.
+MD
+
+node --check packages/forge-core/src/commands/improve.mjs
+node --check scripts/aift-improve-integrated-smoke.mjs
+node scripts/aift-improve-integrated-smoke.mjs
+
+echo ""
+echo "✅ Phase 12C Improve Command Integration complete."
+echo ""
+echo "IMPORTANT:"
+echo "Wire or keep the command router entry:"
+echo "  improve -> packages/forge-core/src/commands/improve.mjs"
+echo ""
+echo "Recommended tests:"
+echo "  aift-forge improve doctor"
+echo "  aift-forge improve status"
+echo "  aift-forge improve analyze"
+echo "  aift-forge improve proposals"
+echo ""
+echo "Commit:"
+echo "  git status"
+echo "  git add ."
+echo "  git commit -m \"Integrate Phase 12 improve command surface\""
+echo "  git push origin main"
