@@ -11,7 +11,11 @@
     "deprecation-plan-required"
   ],
   "tiers": {
-    "required_runtime": ["node", "native-git", "json-store"],
+    "required_runtime": [
+      "node",
+      "native-git",
+      "json-store"
+    ],
     "preferred_runtime": [
       "fastify",
       "sqlite-libsql",
@@ -25,15 +29,13 @@
       "llama-cpp-compatible-local-api",
       "vllm-compatible-local-api",
       "sglang-compatible-local-api",
-      "transformers-js",
-      "onnxruntime-node"
+      "transformers-js"
     ],
     "repo_intelligence": [
       "isomorphic-git",
       "simple-git",
       "tree-sitter",
       "ripgrep-compatible-index",
-      "lancedb",
       "sqlite-vec"
     ],
     "qa_security_release": [
@@ -48,11 +50,31 @@
     ]
   },
   "fallbacks": {
-    "api_framework": ["fastify", "hono", "raw-node-http"],
-    "database": ["libsql", "better-sqlite3", "sqlite-wasm", "json-store"],
-    "collaboration": ["yjs", "@automerge/automerge", "append-only-records"],
-    "git_engine": ["native-git", "isomorphic-git", "simple-git"],
-    "vector_search": ["lancedb", "sqlite-vec", "keyword-index"],
+    "api_framework": [
+      "fastify",
+      "hono",
+      "raw-node-http"
+    ],
+    "database": [
+      "libsql",
+      "better-sqlite3",
+      "sqlite-wasm",
+      "json-store"
+    ],
+    "collaboration": [
+      "yjs",
+      "@automerge/automerge",
+      "append-only-records"
+    ],
+    "git_engine": [
+      "native-git",
+      "isomorphic-git",
+      "simple-git"
+    ],
+    "vector_search": [
+      "sqlite-vec",
+      "keyword-index"
+    ],
     "ai_inference": [
       "ollama-compatible",
       "llama-cpp-compatible",
@@ -80,5 +102,49 @@
     "all package dependencies inventoried before release",
     "all optional integrations must have fallback behavior",
     "security scans required before stable release channel"
-  ]
+  ],
+  "androidTermux": {
+    "forbiddenNativeDependencies": [
+      "onnxruntime-node",
+      "@lancedb/lancedb",
+      "lancedb"
+    ],
+    "inferencePolicy": "Android/Termux uses HTTP provider registry only: Ollama, llama.cpp, or local OpenAI-compatible endpoints.",
+    "vectorPolicy": "Android/Termux must not require LanceDB native bindings. Use JSONL/local file indexes until a supported mobile vector backend exists."
+  },
+  "platformProfiles": {
+    "android-termux": {
+      "platform": "android",
+      "installMode": "portable-js-plus-http-providers",
+      "forbiddenNativeDependencies": [
+        "@lancedb/lancedb",
+        "@libsql/client",
+        "better-sqlite3",
+        "lancedb",
+        "libsql",
+        "onnxruntime-node",
+        "sharp",
+        "sqlite3"
+      ],
+      "inferencePolicy": "Use HTTP provider registry only: Ollama, llama.cpp, or local OpenAI-compatible endpoints.",
+      "storagePolicy": "Use JSON, JSONL, filesystem records, or HTTP-backed local services. Do not require native SQLite/libsql/LanceDB bindings.",
+      "vectorPolicy": "Use JSONL/local file indexes or external local HTTP vector services until a supported mobile vector backend exists."
+    },
+    "desktop-node": {
+      "platform": "linux/darwin/win32",
+      "installMode": "full-native-optional",
+      "allowedNativeDependencies": [
+        "@lancedb/lancedb",
+        "@libsql/client",
+        "better-sqlite3",
+        "lancedb",
+        "libsql",
+        "onnxruntime-node",
+        "sharp",
+        "sqlite3"
+      ],
+      "inferencePolicy": "May use native desktop providers, HTTP provider registry, or local model runtimes.",
+      "storagePolicy": "May use native SQLite/libsql/LanceDB where supported."
+    }
+  }
 }

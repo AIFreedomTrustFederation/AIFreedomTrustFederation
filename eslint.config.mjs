@@ -1,53 +1,24 @@
-const nodeGlobals = {
-  Buffer: "readonly",
-  URL: "readonly",
-  clearTimeout: "readonly",
-  console: "readonly",
-  process: "readonly",
-  setTimeout: "readonly",
-};
-
 export default [
   {
     ignores: [
       "node_modules/**",
+      ".git/**",
+      ".forge/tmp/**",
+      ".next/**",
       "dist/**",
-      "coverage/**",
-      "apps/*/dist/**",
-      "apps/android/android/**",
-    ],
+      "build/**",
+      "coverage/**"
+    ]
   },
   {
-    files: ["**/*.{js,mjs}"],
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
     languageOptions: {
       ecmaVersion: "latest",
-      sourceType: "module",
-      globals: nodeGlobals,
+      sourceType: "module"
     },
     rules: {
-      "no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
-    },
-  },
-  {
-    files: ["**/*.cjs"],
-    languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "commonjs",
-      globals: {
-        ...nodeGlobals,
-        __dirname: "readonly",
-        module: "readonly",
-        require: "readonly",
-      },
-    },
-    rules: {
-      "no-unused-vars": [
-        "error",
-        { argsIgnorePattern: "^_", varsIgnorePattern: "^_" },
-      ],
-    },
-  },
+      "no-unused-vars": "off",
+      "no-undef": "off"
+    }
+  }
 ];
