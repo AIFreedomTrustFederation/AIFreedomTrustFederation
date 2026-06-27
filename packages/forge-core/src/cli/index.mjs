@@ -1,24 +1,33 @@
 #!/usr/bin/env node
-
 import { existsSync, readdirSync } from "node:fs";
-import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { basename, join } from "node:path";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const commandsDir = join(__dirname, "../commands");
+const commandsDir = new URL("../commands/", import.meta.url);
 
 function commandName(file) {
-  return file.replace(/\.mjs$/, "");
+  return basename(file, ".mjs");
 }
 
-function listCommands() {
-  if (!existsSync(commandsDir)) return [];
+async function loadCommands() {
+  const commands = new Map();
 
-  return readdirSync(commandsDir)
-    .filter((file) => file.endsWith(".mjs"))
-    .map(commandName)
-    .sort();
+  for (const file of readdirSync(commandsDir)) {
+    if (!file.endsWith(".mjs")) continue;
+
+    const name = commandName(file);
+    const mod = await import(new URL(file, commandsDir));
+
+    const handler =
+      mod.default ??
+      mod[name] ??
+      Object.values(mod).find((value) => typeof value === "function");
+
+    if (typeof handler === "function") {
+      commands.set(name, handler);
+    }
+  }
+
+  return commands;
 }
 
 function printHelp(commands) {
@@ -28,37 +37,28 @@ function printHelp(commands) {
   console.log("  aift-forge <command> [...args]");
   console.log("");
   console.log("Commands:");
-  for (const command of commands) {
-    console.log(`  ${command}`);
+  for (const name of [...commands.keys()].sort()) {
+    console.log(`  ${name}`);
   }
 }
 
-async function loadCommand(command) {
-  const path = join(commandsDir, `${command}.mjs`);
-
-  if (!existsSync(path)) return null;
-
-  const mod = await import(pathToFileURL(path).href);
-  return mod[command] ?? mod.default ?? null;
-}
-
 async function main() {
-  const commands = listCommands();
-  const command = process.argv[2] ?? "help";
-  const args = process.argv.slice(3);
+  const commands = await loadCommands();
+  const [command, ...args] = process.argv.slice(2);
 
-  if (command === "help" || command === "--help" || command === "-h" || command === "commands") {
+  if (!command || command === "help" || command === "--help") {
     printHelp(commands);
     return;
   }
 
-  const handler = await loadCommand(command);
+  const handler = commands.get(command);
 
   if (!handler) {
-    console.error(`Unknown command: ${command}`);
-    console.error("");
+    console.log(`Unknown command: ${command}`);
+    console.log("");
     printHelp(commands);
-    process.exit(1);
+    process.exitCode = 1;
+    return;
   }
 
   await handler(args);
