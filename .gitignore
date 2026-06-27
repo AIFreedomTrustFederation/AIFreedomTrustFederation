@@ -29,3 +29,6 @@ add-forge-*.sh
 fix-forge-*.sh
 teach-forge-*.sh
 rebuild-forge-*.sh
+# Forge agent runtime
+.forge/agent-patches/
+.forge/reviews/
