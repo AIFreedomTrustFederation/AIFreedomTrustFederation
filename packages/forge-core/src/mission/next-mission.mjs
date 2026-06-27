@@ -4,6 +4,7 @@ import { saveMission, calculateMissionProgress } from "./state.mjs";
 import { missionTemplate as booksmithDesktopLayer2 } from "./templates/booksmith-desktop-next.mjs";
 import { listEngineers } from "../pipeline/engineers/index.mjs";
 import { discoverRepository } from "../discovery/repository.mjs";
+import { saveDiscoveryMission } from "../discovery/generator.mjs";
 
 function fileExists(root, file) {
   return existsSync(join(root, file));
@@ -60,6 +61,8 @@ export async function generateNextMission(paths, targetRepository = "BookSmith-F
   const executable = discovered.tasks.filter((task) => task.engineer);
 
   if (!executable.length) {
+    const graphMission = saveDiscoveryMission(paths, targetRepository);
+    if (graphMission) return graphMission;
     return null;
   }
 

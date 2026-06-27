@@ -1,5 +1,7 @@
 import { getForgePaths } from "../lib/paths.mjs";
 import { discoverRepository } from "../discovery/repository.mjs";
+import { buildRepositoryGraph } from "../discovery/graph.mjs";
+import { detectGaps } from "../discovery/gaps.mjs";
 import { section, ok, warn } from "../lib/logger.mjs";
 
 export async function discover(args = []) {
@@ -38,6 +40,23 @@ export async function discover(args = []) {
 
   if (result.tasks.some((task) => !task.engineer)) {
     warn("Some discovered tasks do not have engineers yet.");
+  }
+
+  const graph = buildRepositoryGraph(result.root);
+  const gaps = detectGaps(graph);
+
+  section("Repository Graph");
+  console.log(`Files scanned: ${graph.files.length}`);
+  console.log(`Imports found: ${graph.imports.length}`);
+  console.log(`Missing imports: ${graph.missingImports.length}`);
+  console.log(`TODO/stub files: ${graph.todos.length}`);
+
+  section("Graph Gaps");
+  if (!gaps.length) ok("No graph gaps discovered.");
+  for (const gap of gaps.slice(0, 10)) {
+    console.log(`⚠️ ${gap.id}`);
+    console.log(`   title: ${gap.title}`);
+    console.log(`   source: ${gap.source}`);
   }
 }
 
