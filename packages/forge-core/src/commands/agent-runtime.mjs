@@ -9,10 +9,26 @@ export async function agentRuntime(args = []) {
   if (action === "status" || action === "providers") {
     console.log("🧠 Forge Agent Runtime");
 
+    section("Policy");
+    ok("Local-only / no API keys / open-source first");
+
     section("Providers");
     for (const provider of runtime.providers()) {
       console.log(`${provider.enabled ? "✅" : "⬜"} ${provider.id} — ${provider.label}`);
       console.log(`   mode: ${provider.mode}`);
+      console.log(`   localOnly: ${provider.localOnly ? "yes" : "no"}`);
+      console.log(`   openSource: ${provider.openSource ? "yes" : "no"}`);
+    }
+    return;
+  }
+
+  if (action === "health") {
+    console.log("🩺 Forge Agent Runtime Health");
+    const health = await runtime.health();
+    for (const item of health) {
+      section(item.id);
+      if (item.ok) ok(item.status ?? "available");
+      else warn(item.reason ?? item.status ?? "unavailable");
     }
     return;
   }

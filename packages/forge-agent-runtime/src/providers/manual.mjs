@@ -1,10 +1,21 @@
 export const manualProvider = {
   id: "manual",
-  label: "Manual Agent Provider",
+  label: "Manual Local Operator",
   mode: "packet",
+  enabled: true,
+  localOnly: true,
+  openSource: true,
 
   canSolve() {
     return true;
+  },
+
+  async health() {
+    return {
+      ok: true,
+      status: "available",
+      reason: "Manual provider is always available and requires no API keys."
+    };
   },
 
   async solve(packet) {
@@ -13,7 +24,7 @@ export const manualProvider = {
       provider: "manual",
       mode: "manual-packet",
       packet,
-      message: "Manual provider selected. Send packet to an AI coding agent and place the returned patch in .forge/agent-patches/."
+      message: "Manual local provider selected. Use any open-source/local coding model or human operator. No API keys required."
     };
   }
 };

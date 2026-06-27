@@ -1,4 +1,4 @@
-import { chooseProvider, listProviders } from "./registry.mjs";
+import { chooseProvider, listProviders, providerHealth } from "./registry.mjs";
 import { reviewPatchText } from "./reviewer.mjs";
 
 export class ForgeAgentRuntime {
@@ -10,13 +10,17 @@ export class ForgeAgentRuntime {
     return listProviders();
   }
 
+  async health() {
+    return providerHealth();
+  }
+
   async solve(packet) {
-    const provider = chooseProvider(packet, this.preferredProvider);
+    const provider = await chooseProvider(packet, this.preferredProvider);
 
     if (!provider) {
       return {
         ok: false,
-        reason: "No enabled provider can solve this packet."
+        reason: "No enabled local-only provider can solve this packet."
       };
     }
 
