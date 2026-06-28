@@ -1,4 +1,5 @@
 #!/data/data/com.termux/files/usr/bin/bash
 set -e
-cd "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge"
-exec node "/data/data/com.termux/files/home/Projects/AIFT/AIFT-Forge/packages/forge-core/src/cli/index.mjs" "$@"
+
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+node "$ROOT/packages/forge-core/src/cli/index.mjs" "$@"
